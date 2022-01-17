@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="index.css" type="text/css" />
+
+    <title>Project</title>
+  </head>
+  <body>
+    <div class="login">
+      <p class="loginText">Log in to get started..</p>
+      <form class="login_form">
+        <input
+          type="text"
+          placeholder="User name"
+          class="login_input login_input--user"
+        />
+        <input
+          type="text"
+          placeholder="Password"
+          maxlength="4"
+          class="login_input login_input--password"
+        />
+        <button class="login_btn">&#10148;</button>
+      </form>
+    </div>
+
+    <div class="main">
+      <div class="main_top">
+        <div class="listClients_card listClients_card--connected">
+          <p class="listClients_title">Connected</p>
+          <div class="client_list client_list--connected"></div>
+        </div>
+
+        <div class="listClients_card listClients_card--disconnected">
+          <p class="listClients_title">Disconnected</p>
+          <div class="client_list client_list--disconnected"></div>
+        </div>
+      </div>
+
+      <div class="main_bottom">
+        <!-- Clients -->
+        <div class="main_left">
+          <button class="addBtn addBtn--client">
+            ADD new client<img class="arrow-hover" src="./addIcon.png" />
+          </button>
+
+          <div class="clients_container">
+            <div class="client_card hidden" id="abc">
+              <p class="client_name"></p>
+              <div class="button_box">
+                <button class="btn btn_edit--client">
+                  <img class="editIcon" src="./editIconB.png" />
+                </button>
+                <button class="btn btn_remove--client">
+                  <img class="removeIcon" src="./removeIconB.png" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commercials -->
+        <div class="main_right">
+          <button class="addBtn addBtn--comm">
+            ADD new Commercial<img class="arrow-hover" src="./addIcon.png" />
+          </button>
+          <input type="text" id="clientNameInput" placeholder="" />
+          <div class="commercials_container">
+            <div class="commercial_card hidden" id="">
+              <h1 class="commercial_num"></h1>
+              <input type="text" id="durationInput" placeholder="" />
+              <input type="text" id="urlInput" placeholder="" />
+              <img class="commercial_img" src="" alt="" />
+              <div class="button_box">
+                <button class="btn btn_edit--comm">
+                  <img class="editIcon" src="./editIconB.png" />
+                </button>
+                <button class="btn btn_remove--comm">
+                  <img class="removeIcon" src="./removeIconB.png" />
+                </button>
+                <button class="btn btn_save--comm">SAVE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class=''></div> -->
+  </body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script type="text/javascript">
+  var socket = io();
+
+  const inputLoginUsername = document.querySelector(".login_input--user");
+  const inputLoginPin = document.querySelector(".login_input--password");
+  const main = document.querySelector(".main");
+  const loginBtn = document.querySelector(".login_btn");
+
+  socket.on(
+    "getAdmin",
+    function (userServer, passwordServer, clientsCollection) {
+      loginBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const user = inputLoginUsername.value;
+        const password = Number(inputLoginPin.value);
+
+        if (user === userServer && password === passwordServer) {
+          socket.emit("getResult", "true");
+          clientsArr = clientsCollection;
+          displayClients();
+          // main.style.visibility = 'visible';
+        }
+      });
+    }
+  );
+
+  socket.on("connectedUser", function (screenName) {
+    console.log(`user name = ${screenName}`);
+    addNewUserDataRow(screenName, "connected");
+    removeUserDataRow(screenName, "disconnected");
+  });
+
+  socket.on("disconnectUser", function (screenName) {
+    console.log(`user name = ${screenName}`);
+    addNewUserDataRow(screenName, "disconnected");
+    removeUserDataRow(screenName, "connected");
+  });
+</script>
+<script src="./index.js"></script>

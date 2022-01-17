@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css" type="text/css" />
+  </head>
+
+  <body>
+    <div class="top">
+      <h2 class="top_title" id="top_title"></h2>
+    </div>
+    <div class="main_container" id="commercials">
+      <img id="myImg" src="#" style="width: 700px; height: 400px" />
+    </div>
+  </body>
+</html>
+
+<!-- <script src="/socket.io/socket.io.js"></script>
+
+<script type="text/javascript">
+  var socket = io();
+
+  socket.on('getJson', function (clientJson, screenName) {
+    let commArray = clientJson[0].commeracials;
+
+    let i = 0;
+    let arrSize = commArray.length;
+    let firstTime = commArray[0].duration * 10;
+
+    document.getElementById(
+      'top_title'
+    ).textContent = `Hello, ${clientJson[0].screen}`;
+
+    document.getElementById('myImg').src = commArray[0].img;
+
+    let run = setInterval(function () {
+      myFunc(), firstTime;
+    });
+
+    function myFunc() {
+      var path = '/' + screenName;
+      // currentPage = location.pathname;
+
+      document.getElementById('myImg').src = commArray[i].img;
+
+      clearInterval(run);
+      firstTime = commArray[i].duration * 10;
+
+      i++;
+      if (i === arrSize) i = 0;
+
+      run = setInterval(myFunc, firstTime);
+    }
+  });
+</script> -->
+
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+<!-- -------------------------------------------- -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script type="text/javascript">
+  var socket = io();
+
+  socket.on("getJson", function (clientJson, screenName) {
+    let i = 0;
+    let commArray = clientJson[0].commeracials;
+    let arrSize = commArray.length;
+    document.getElementById("myImg").src = commArray[0].img;
+
+    //OLD INTERVAL
+
+    let time = 0;
+    var path = "/" + screenName;
+    currentPage = location.pathname;
+
+    function func(index) {
+      return commArray[index].duration;
+    }
+
+    var timer = setInterval(() => {
+      if (currentPage !== path) {
+        clearInterval(timer);
+        return;
+      }
+      document.getElementById("myImg").src = commArray[i].img;
+
+      i++;
+      if (i === arrSize) i = 0;
+    }, func(i));
+  });
+</script>
