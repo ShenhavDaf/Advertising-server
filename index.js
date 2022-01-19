@@ -1,48 +1,20 @@
-const commercialsArr = [];
 let clientsArr = [];
-
 const connectedClients = [];
 const disconnectedClientsArr = [];
 
-/* -- Containers -- */
+
+/* ------------ Containers ------------ */
+
+
 const connectedListCont = document.querySelector(".client_list--connected");
-const disconnectedListCont = document.querySelector(
-  ".client_list--disconnected"
-);
+const disconnectedListCont = document.querySelector(".client_list--disconnected");
 const clientsContainer = document.querySelector(".clients_container");
 const commContainer = document.querySelector(".commercials_container");
 
-/* -- Buttons -- */
-const addNewClientBtn = document.querySelector(".addBtn--client");
-const addNewCommBtn = document.querySelector(".addBtn--comm");
-addNewClientBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  displayUserData("connected");
-  displayUserData("disconnected");
-  socket.emit("notifyServerToAddNewClient");
 
-  displayClients();
-});
+/* ------------ User data functions ------------ */
 
-/* ORTAL - added to check if the notifyServerToAddCommercial in mongo works
- * it needs to get an input from the admin(TODO) 
-this button suposed to be hidden until the admin press the edit button */
-addNewCommBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  console.log("111111111");
-  socket.emit("notifyServerToAddCommercial", "screen-1");
-  displayClients();
-});
 
-// removeBtn.forEach((btn) => {
-//   btn.addEventListener('click', (e) => {
-//     e.preventDefault();
-//     console.log('mshvfba,');
-//     console.log(e.target.parentElement);
-//   });
-// });
-
-/* -- User data functions -- */
 const createUserDataRow = (clientName) => {
   const element = `
     <div class="client_row" >
@@ -58,7 +30,6 @@ const addNewUserDataRow = (client, type) => {
   } else if (type === "disconnected") {
     disconnectedClientsArr.push(client);
   }
-
   displayUserData(type);
 };
 
@@ -89,7 +60,9 @@ const displayUserData = (type) => {
   }
 };
 
-/* -- Clients functions -- */
+
+/* ------------ Clients functions ------------ */
+
 
 const displayClients = () => {
   clientsContainer.innerHTML = "";
@@ -98,6 +71,7 @@ const displayClients = () => {
     clientsContainer.insertAdjacentHTML("afterbegin", element);
   });
 
+  // Remove client 
   const removeBtn = document.querySelectorAll(".btn_remove--client");
   removeBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -106,16 +80,16 @@ const displayClients = () => {
       const userID = currUser.id;
 
       currUser.remove();
-      socket.emit("notifyServerToRemoveClient", userID);
+      // socket.emit("notifyServerToRemoveClient", userID);
     });
   });
 
+  // Display client's commercials
   const displayBtn = document.querySelectorAll(".btn_edit--client");
   displayBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const currUser = e.target.parentElement.parentElement.parentElement;
-
       const userID = currUser.id;
 
       clientsArr.forEach((client) => {
@@ -132,27 +106,23 @@ const createClientRow = (client) => {
     <div class="client_card" id="${client.screen}">
               <p class="client_name">${client.screen}</p>
               <div class="button_box">
-                <button class='btn btn_edit--client'><img class="editIcon" src="./editIconB.png"/></button>
-                <button class='btn btn_remove--client'><img class="removeIcon" src="./removeIconB.png"/></button>
+                <button class='btn btn_edit--client'><img class="editIcon" src="./icons/editIconB.png"/></button>
+                <button class='btn btn_remove--client'><img class="removeIcon" src="./icons/removeIconB.png"/></button>
               </div>
     </div>
     `;
   return element;
 };
 
-// Add new client
-// Edit client
-// Remove client
 
-/* -- Commercials functions -- */
+/* ------------ Commercials functions ------------ */
 
-// Add new commercial
 
 function displayComm(client) {
-  const input = document.getElementById("clientNameInput");
-
-  input.placeholder = client.screen;
-
+  const screenName = document.querySelector('.screenName');
+  screenName.innerHTML = client.screen;
+  commContainer.innerHTML = '';
+  
   client.commeracials.forEach((comm) => {
     const element = createCommercialsRow(comm);
     commContainer.insertAdjacentHTML("afterbegin", element);
@@ -167,47 +137,39 @@ function displayComm(client) {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
 
-      const currComm = e.target.parentElement.parentElement;
+      const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
 
       currComm.remove();
-
-      socket.emit("notifyServerToRemoveComm", client, commID);
+      // socket.emit("notifyServerToRemoveComm", client, commID);
     });
   });
 
-  // Edit spesific commercial (text+ image url)
+  // Edit spesific commercial
   editCommBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const currComm = e.target.parentElement.parentElement;
+      const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
-
+      
       client.commeracials.forEach((comm) => {
         if (comm.id === Number(commID)) {
-          editComm(comm, client);
+          editComm(comm, client, currComm);
         }
       });
     });
   });
 
-  // Save commercial (text+ image url)
+  // Save commercial
   saveCommBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const currComm = e.target.parentElement;
-
-      console.log("from save");
-      console.log(currComm);
+      const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
 
-      // console.log(client.commeracials);
-
       client.commeracials.forEach((comm) => {
-        console.log(comm.id);
-        console.log(commID);
         if (comm.id === Number(commID)) {
-          saveComm(comm, client);
+          saveComm(comm, client, currComm);
         }
       });
     });
@@ -216,44 +178,191 @@ function displayComm(client) {
 
 function createCommercialsRow(comm) {
   const element = `<div class="commercial_card" id="${comm.id}">
-  <h1 class="commercial_num">Commercial ${comm.id}</h1>
-  <input type="text" id="durationInput" placeholder="${comm.duration}" />
-  <input type="text" id="urlInput" placeholder="${comm.imgUrl}" />
-  <img class='commercial_img' src="${comm.img}" alt="" style="width: 50px; height: 50px;>
-  <div class="button_box">
-    <button class='btn btn_edit--comm'><img class="editIcon" src="./editIconB.png"/></button>
-
-    <button class='btn btn_remove--comm'><img class="removeIcon" src="./removeIconB.png"/></button>
-    
-    <button class='btn btn_save--comm'><img class="removeIcon" src="./removeIconB.png"/>SAVE</button>
-  </div>
-</div>`;
+    <h1 class="commercial_num">Commercial ${comm.id}</h1>
+    <p class="durationComm">${comm.duration}</p>
+    <p class="imgUrlComm">${comm.imgUrl}</p>
+    <img class='commercial_img' src="${comm.img}" alt="">
+    <div class="button_box">
+      <button class='btn btn_edit--comm'><img class="editIcon" src="./icons/editIconB.png"/></button>
+      <button class='btn btn_remove--comm'><img class="removeIcon" src="./icons/removeIconB.png"/></button>
+      <button class='btn btn_save--comm'><img class="saveIcon" src="./icons/saveIcon.png"/></button>
+    </div>
+  </div>`;
 
   return element;
 }
 
-function editComm(comm, client) {
-  const clientNameInput = document.getElementById("clientNameInput");
-  const durationInput = document.getElementById("durationInput");
-  const urlInput = document.getElementById("urlInput");
+function editComm(comm, client, commElement) {
+  const duration = commElement.querySelector(".durationComm");
+  const imgUrl = commElement.querySelector(".imgUrlComm");
+  
+  const durationInput = createInputElement('duration', duration.innerHTML);
+  commElement.replaceChild(durationInput, duration);
 
-  clientNameInput.value = client.screen;
-  durationInput.value = comm.duration;
-  urlInput.value = comm.imgUrl;
-
-  // console.log(durationInput);
+  // imgURL
 }
 
-function saveComm(comm, client) {
-  const clientNameInput = document.getElementById("clientNameInput");
-  const durationInput = document.getElementById("durationInput");
-  const urlInput = document.getElementById("urlInput");
-
-  client.screen = clientNameInput.value;
+function saveComm(comm, client, currComm) {
+  if(!inputIsExist(currComm.children)) {
+    return;
+  }
+  
+  const durationInput = currComm.querySelector('.durationInput');
   comm.duration = Number(durationInput.value);
-  comm.imgUrl = urlInput.value;
-
-  // console.log(durationInput);
-
-  socket.emit("notifyServerToEditClient", client);
+  const newDurationElem = createParagraphElement('durationComm', durationInput.value);
+  // imgURL
+  currComm.replaceChild(newDurationElem, durationInput);
+  // socket.emit("notifyServerToEditClient", client);
 }
+
+const createInputElement = function (type, value) {
+  const durationInputElem = document.createElement('input');
+  durationInputElem.type = 'text';
+  durationInputElem.classList.add(`${type}Input`);
+  durationInputElem.classList.add('input');
+  durationInputElem.value = value;
+  return durationInputElem;
+}
+
+const createParagraphElement = function (className, value) {
+  const durationPElem = document.createElement('p');
+  durationPElem.classList.add(className);
+  durationPElem.innerHTML = value;
+  return durationPElem;
+}
+
+const inputIsExist = function (classArr) {
+  for(let i = 0; i < classArr.length; i++) {
+    if(classArr[i].classList.contains('input')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+/* ------------ Modal's functions ------------ */
+
+
+const modal = document.querySelector('.modal');
+const overlay = document.querySelector('.overlay');
+const addNewClientBtn = document.querySelector('.addBtn--client');
+const addNewCommBtn = document.querySelector(".addBtn--comm");
+
+const clientModal = `
+      <h1>Add new client</h1>
+      <form class="addNewClient">
+        <div class="rowForm">
+          <lable class="nameLable">Client Name: </lable>
+          <input type="text" class="newNameInput">
+        </div>
+      </form>
+`
+const commercialModal = `
+      <h1>Add new client</h1>
+      <form class="addNewClient">
+        <div class="rowForm">
+          <lable class="nameLable">Client: </lable>
+          <input type="text" class="clientInput">
+        </div>
+        <div class="rowForm">
+          <lable class="nameLable">Duration: </lable>
+          <input type="text" class="durationInput">
+        </div>
+        <div class="rowForm">
+          <lable class="nameLable">Image URL: </lable>
+          <input type="text" class="imgURLInput">
+        </div>
+      </form>
+`
+
+const openModal = function (type) {
+  modal.innerHTML = '';
+  modal.insertAdjacentHTML('afterbegin', `<button class="close-modal">&times;</button>
+  <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`)
+  if(type === 'client') {
+    modal.insertAdjacentHTML('beforeend', clientModal);
+  } else if (type === 'commercial') {
+    modal.insertAdjacentHTML('beforeend', commercialModal);
+  }
+
+  modal.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+
+  const btnCloseModal = document.querySelector('.close-modal');
+  const saveBtn = document.querySelector('.saveDetails');
+  btnCloseModal.addEventListener('click', closeModal);
+  saveBtn.addEventListener('click',  () => {
+    saveDetails(type);
+  })
+};
+
+const closeModal = function () {
+  modal.classList.add('hidden');
+  overlay.classList.add('hidden');
+};
+
+const saveDetails = function (type) {
+  if(type === 'client') {
+    saveNewClient();
+  } else if (type === 'commercial') {
+    saveNewComm();
+  }
+  closeModal();
+}
+
+const saveNewClient = function () {
+  const newClientName = document.querySelector('.newNameInput');
+  const newClient = {
+    screen: newClientName.value
+  }
+  
+  clientsArr.push(newClient);
+  displayClients();
+
+  // socket.emit("notifyServerToAddClient", newClient);
+}
+
+const saveNewComm = function () {
+  const clientInput = document.querySelector('.clientInput');
+  const durationInput = document.querySelector('.durationInput');
+  const imgUrlInput = document.querySelector('.imgURLInput');
+
+  const client = getClient(clientInput.value);
+  console.log(client);
+  if(client === null) {
+    alert('Client not found..');
+    return;
+  }
+  
+  const newCommercial = {
+    id: (client.commeracials.length + 1),
+    duration: durationInput.value,
+    imgUrl: imgUrlInput.value,
+    img: './photos/Hanukkah.jpg'
+  }
+
+  client.commeracials.push(newCommercial);
+  displayComm(client);
+  // socket.emit("notifyServerToAddCommercial", client.screen, commercial);
+}
+
+const getClient = function (name) {
+  let clientToUpdate;
+  clientsArr.forEach((client) => {
+    if(client.screen === name) {
+      clientToUpdate = client;
+    }
+  });
+  return clientToUpdate;
+};
+
+addNewClientBtn.addEventListener('click', () => {
+  openModal('client');
+});
+
+addNewCommBtn.addEventListener('click', () => {
+  openModal('commercial');
+});
+
+displayClients();
