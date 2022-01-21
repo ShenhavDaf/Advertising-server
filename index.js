@@ -2,18 +2,16 @@ let clientsArr = [];
 const connectedClients = [];
 const disconnectedClientsArr = [];
 
-
 /* ------------ Containers ------------ */
 
-
 const connectedListCont = document.querySelector(".client_list--connected");
-const disconnectedListCont = document.querySelector(".client_list--disconnected");
+const disconnectedListCont = document.querySelector(
+  ".client_list--disconnected"
+);
 const clientsContainer = document.querySelector(".clients_container");
 const commContainer = document.querySelector(".commercials_container");
 
-
 /* ------------ User data functions ------------ */
-
 
 const createUserDataRow = (clientName) => {
   const element = `
@@ -60,9 +58,7 @@ const displayUserData = (type) => {
   }
 };
 
-
 /* ------------ Clients functions ------------ */
-
 
 const displayClients = () => {
   clientsContainer.innerHTML = "";
@@ -71,7 +67,7 @@ const displayClients = () => {
     clientsContainer.insertAdjacentHTML("afterbegin", element);
   });
 
-  // Remove client 
+  // Remove client
   const removeBtn = document.querySelectorAll(".btn_remove--client");
   removeBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -80,7 +76,7 @@ const displayClients = () => {
       const userID = currUser.id;
 
       currUser.remove();
-      // socket.emit("notifyServerToRemoveClient", userID);
+      socket.emit("notifyServerToRemoveClient", userID);
     });
   });
 
@@ -114,15 +110,13 @@ const createClientRow = (client) => {
   return element;
 };
 
-
 /* ------------ Commercials functions ------------ */
 
-
 function displayComm(client) {
-  const screenName = document.querySelector('.screenName');
+  const screenName = document.querySelector(".screenName");
   screenName.innerHTML = client.screen;
-  commContainer.innerHTML = '';
-  
+  commContainer.innerHTML = "";
+
   client.commeracials.forEach((comm) => {
     const element = createCommercialsRow(comm);
     commContainer.insertAdjacentHTML("afterbegin", element);
@@ -141,7 +135,7 @@ function displayComm(client) {
       const commID = currComm.id;
 
       currComm.remove();
-      // socket.emit("notifyServerToRemoveComm", client, commID);
+      socket.emit("notifyServerToRemoveComm", client, commID);
     });
   });
 
@@ -151,7 +145,7 @@ function displayComm(client) {
       e.preventDefault();
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
-      
+
       client.commeracials.forEach((comm) => {
         if (comm.id === Number(commID)) {
           editComm(comm, client, currComm);
@@ -195,58 +189,65 @@ function createCommercialsRow(comm) {
 function editComm(comm, client, commElement) {
   const duration = commElement.querySelector(".durationComm");
   const imgUrl = commElement.querySelector(".imgUrlComm");
-  
-  const durationInput = createInputElement('duration', duration.innerHTML);
+
+  const durationInput = createInputElement("duration", duration.innerHTML);
   commElement.replaceChild(durationInput, duration);
 
   // imgURL
+  const imgUrlInput = createInputElement("imgUrl", imgUrl.innerHTML);
+  commElement.replaceChild(imgUrlInput, imgUrl);
 }
 
 function saveComm(comm, client, currComm) {
-  if(!inputIsExist(currComm.children)) {
+  if (!inputIsExist(currComm.children)) {
     return;
   }
-  
-  const durationInput = currComm.querySelector('.durationInput');
+
+  const durationInput = currComm.querySelector(".durationInput");
   comm.duration = Number(durationInput.value);
-  const newDurationElem = createParagraphElement('durationComm', durationInput.value);
+  const newDurationElem = createParagraphElement(
+    "durationComm",
+    durationInput.value
+  );
   // imgURL
+  const imgUrlInput = currComm.querySelector(".imgUrlInput");
+  comm.imgUrl = imgUrlInput.value;
+  const newImgUrlElem = createParagraphElement("imgUrlComm", imgUrlInput.value);
   currComm.replaceChild(newDurationElem, durationInput);
-  // socket.emit("notifyServerToEditClient", client);
+  currComm.replaceChild(newImgUrlElem, imgUrlInput);
+  socket.emit("notifyServerToEditClient", client);
 }
 
 const createInputElement = function (type, value) {
-  const durationInputElem = document.createElement('input');
-  durationInputElem.type = 'text';
+  const durationInputElem = document.createElement("input");
+  durationInputElem.type = "text";
   durationInputElem.classList.add(`${type}Input`);
-  durationInputElem.classList.add('input');
+  durationInputElem.classList.add("input");
   durationInputElem.value = value;
   return durationInputElem;
-}
+};
 
 const createParagraphElement = function (className, value) {
-  const durationPElem = document.createElement('p');
+  const durationPElem = document.createElement("p");
   durationPElem.classList.add(className);
   durationPElem.innerHTML = value;
   return durationPElem;
-}
+};
 
 const inputIsExist = function (classArr) {
-  for(let i = 0; i < classArr.length; i++) {
-    if(classArr[i].classList.contains('input')) {
+  for (let i = 0; i < classArr.length; i++) {
+    if (classArr[i].classList.contains("input")) {
       return true;
     }
   }
   return false;
-}
-
+};
 
 /* ------------ Modal's functions ------------ */
 
-
-const modal = document.querySelector('.modal');
-const overlay = document.querySelector('.overlay');
-const addNewClientBtn = document.querySelector('.addBtn--client');
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const addNewClientBtn = document.querySelector(".addBtn--client");
 const addNewCommBtn = document.querySelector(".addBtn--comm");
 
 const clientModal = `
@@ -257,7 +258,7 @@ const clientModal = `
           <input type="text" class="newNameInput">
         </div>
       </form>
-`
+`;
 const commercialModal = `
       <h1>Add new client</h1>
       <form class="addNewClient">
@@ -274,95 +275,98 @@ const commercialModal = `
           <input type="text" class="imgURLInput">
         </div>
       </form>
-`
+`;
 
 const openModal = function (type) {
-  modal.innerHTML = '';
-  modal.insertAdjacentHTML('afterbegin', `<button class="close-modal">&times;</button>
-  <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`)
-  if(type === 'client') {
-    modal.insertAdjacentHTML('beforeend', clientModal);
-  } else if (type === 'commercial') {
-    modal.insertAdjacentHTML('beforeend', commercialModal);
+  modal.innerHTML = "";
+  modal.insertAdjacentHTML(
+    "afterbegin",
+    `<button class="close-modal">&times;</button>
+  <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`
+  );
+  if (type === "client") {
+    modal.insertAdjacentHTML("beforeend", clientModal);
+  } else if (type === "commercial") {
+    modal.insertAdjacentHTML("beforeend", commercialModal);
   }
 
-  modal.classList.remove('hidden');
-  overlay.classList.remove('hidden');
+  modal.classList.remove("hidden");
+  overlay.classList.remove("hidden");
 
-  const btnCloseModal = document.querySelector('.close-modal');
-  const saveBtn = document.querySelector('.saveDetails');
-  btnCloseModal.addEventListener('click', closeModal);
-  saveBtn.addEventListener('click',  () => {
+  const btnCloseModal = document.querySelector(".close-modal");
+  const saveBtn = document.querySelector(".saveDetails");
+  btnCloseModal.addEventListener("click", closeModal);
+  saveBtn.addEventListener("click", () => {
     saveDetails(type);
-  })
+  });
 };
 
 const closeModal = function () {
-  modal.classList.add('hidden');
-  overlay.classList.add('hidden');
+  modal.classList.add("hidden");
+  overlay.classList.add("hidden");
 };
 
 const saveDetails = function (type) {
-  if(type === 'client') {
+  if (type === "client") {
     saveNewClient();
-  } else if (type === 'commercial') {
+  } else if (type === "commercial") {
     saveNewComm();
   }
   closeModal();
-}
+};
 
 const saveNewClient = function () {
-  const newClientName = document.querySelector('.newNameInput');
+  const newClientName = document.querySelector(".newNameInput");
   const newClient = {
-    screen: newClientName.value
-  }
-  
+    screen: newClientName.value,
+  };
+
   clientsArr.push(newClient);
   displayClients();
 
-  // socket.emit("notifyServerToAddClient", newClient);
-}
+  socket.emit("notifyServerToAddClient", newClient);
+};
 
 const saveNewComm = function () {
-  const clientInput = document.querySelector('.clientInput');
-  const durationInput = document.querySelector('.durationInput');
-  const imgUrlInput = document.querySelector('.imgURLInput');
+  const clientInput = document.querySelector(".clientInput");
+  const durationInput = document.querySelector(".durationInput");
+  const imgUrlInput = document.querySelector(".imgURLInput");
 
   const client = getClient(clientInput.value);
-  console.log(client);
-  if(client === null) {
-    alert('Client not found..');
+  // console.log(client);
+  if (client == null) {
+    alert("Client not found..");
     return;
   }
-  
   const newCommercial = {
-    id: (client.commeracials.length + 1),
+    id: client.commeracials.length + 1,
     duration: durationInput.value,
     imgUrl: imgUrlInput.value,
-    img: './photos/Hanukkah.jpg'
-  }
+    img: "./photos/Hanukkah.jpg",
+  };
 
   client.commeracials.push(newCommercial);
   displayComm(client);
-  // socket.emit("notifyServerToAddCommercial", client.screen, commercial);
-}
+  socket.emit("notifyServerToAddCommercial", client.screen, newCommercial);
+};
 
 const getClient = function (name) {
+  console.log(name);
   let clientToUpdate;
   clientsArr.forEach((client) => {
-    if(client.screen === name) {
+    if (client.screen === name) {
       clientToUpdate = client;
     }
   });
   return clientToUpdate;
 };
 
-addNewClientBtn.addEventListener('click', () => {
-  openModal('client');
+addNewClientBtn.addEventListener("click", () => {
+  openModal("client");
 });
 
-addNewCommBtn.addEventListener('click', () => {
-  openModal('commercial');
+addNewCommBtn.addEventListener("click", () => {
+  openModal("commercial");
 });
 
 displayClients();
