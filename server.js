@@ -301,33 +301,35 @@ function adminFunc(response) {
           );
       });
 
-      socket.on("notifyServerToAddCommercial", function (screenName) {
-        console.log("22222222222");
-        dbo.collection(collectionName).updateMany(
-          { screen: screenName },
-          {
-            $push: {
-              commeracials: {
-                id: 3,
-                img: ".COCOCO",
-                imgUrl: "http://LALALA",
-                duration: 55555,
+      socket.on(
+        "notifyServerToAddCommercial",
+        function (screenName, commercial) {
+          console.log("screen : " + screenName);
+          console.log("commercial : " + commercial);
+          dbo.collection(collectionName).updateMany(
+            { screen: screenName },
+            {
+              $push: {
+                commeracials: commercial,
               },
-            },
-          }
-        );
-      });
-      socket.on("notifyServerToAddNewClient", function () {
+            }
+          );
+        }
+      );
+      socket.on("notifyServerToAddClient", function (newClient) {
         console.log("3333333333");
         dbo.collection(collectionName).insertOne({
-          screen: "screen-4",
-          commeracials: {
-            id: 1,
-            img: ".TUTUTTU",
-            imgUrl: "http://YAYAYAYA",
-            duration: 3333333,
-          },
+          screen: newClient.screen,
+          commeracials: [],
         });
+      });
+      socket.on("notifyServerToChangeAdminPassword", function () {
+        dbo
+          .collection(adminCollection)
+          .updateOne(
+            { role: "admin" },
+            { $set: { userName: "a", password: "12" } }
+          );
       });
     });
   });

@@ -68,10 +68,13 @@
             <p class="screenName"></p>
             <!-- <input type="text" id="clientNameInput" placeholder="" /> -->
             <button class="addBtn addBtn--comm">
-              ADD new Commercial<img class="arrow-hover" src="./icons/addIcon.png" />
+              ADD new Commercial<img
+                class="arrow-hover"
+                src="./icons/addIcon.png"
+              />
             </button>
           </div>
-          
+
           <div class="commercials_container">
             <div class="commercial_card hidden" id="">
               <h1 class="commercial_num"></h1>
@@ -93,53 +96,50 @@
       </div>
     </div>
 
-    <div class="modal hidden">
-    </div>
+    <div class="modal hidden"></div>
     <div class="overlay hidden"></div>
-
   </body>
 </html>
 
-<!-- <script src="/socket.io/socket.io.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
 
 <script type="text/javascript">
-  // var socket = io();
+  var socket = io();
 
   const inputLoginUsername = document.querySelector(".login_input--user");
   const inputLoginPin = document.querySelector(".login_input--password");
   const main = document.querySelector(".main");
   const loginBtn = document.querySelector(".login_btn");
-  
 
-  // socket.on(
-  //   "getAdmin",
-  //   function (userServer, passwordServer, clientsCollection) {
-  //     loginBtn.addEventListener("click", function (event) {
-  //       event.preventDefault();
+  socket.on(
+    "getAdmin",
+    function (userServer, passwordServer, clientsCollection) {
+      loginBtn.addEventListener("click", function (event) {
+        event.preventDefault();
 
-  //       const user = inputLoginUsername.value;
-  //       const password = Number(inputLoginPin.value);
+        const user = inputLoginUsername.value;
+        const password = Number(inputLoginPin.value);
 
-  //       if (user === userServer && password === passwordServer) {
-  //         socket.emit("getResult", "true");
-  //         clientsArr = clientsCollection;
-  //         displayClients();
-  //         // main.style.visibility = 'visible';
-  //       }
-  //     });
-  //   }
-  // );
+        if (user === userServer && password === passwordServer) {
+          socket.emit("getResult", "true");
+          clientsArr = clientsCollection;
+          displayClients();
+          // main.style.visibility = 'visible';
+        }
+      });
+    }
+  );
 
-  // socket.on("connectedUser", function (screenName) {
-  //   console.log(`user name = ${screenName}`);
-  //   addNewUserDataRow(screenName, "connected");
-  //   removeUserDataRow(screenName, "disconnected");
-  // });
+  socket.on("connectedUser", function (screenName) {
+    console.log(`user name = ${screenName}`);
+    addNewUserDataRow(screenName, "connected");
+    removeUserDataRow(screenName, "disconnected");
+  });
 
-  // socket.on("disconnectUser", function (screenName) {
-  //   console.log(`user name = ${screenName}`);
-  //   addNewUserDataRow(screenName, "disconnected");
-  //   removeUserDataRow(screenName, "connected");
-  // });
+  socket.on("disconnectUser", function (screenName) {
+    console.log(`user name = ${screenName}`);
+    addNewUserDataRow(screenName, "disconnected");
+    removeUserDataRow(screenName, "connected");
+  });
 </script>
 <script src="./index.js"></script>
