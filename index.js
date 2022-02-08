@@ -249,6 +249,7 @@ const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const addNewClientBtn = document.querySelector(".addBtn--client");
 const addNewCommBtn = document.querySelector(".addBtn--comm");
+const changeDetailsBtn = document.querySelector(".btn_settings");
 
 const clientModal = `
       <h1>Add new client</h1>
@@ -277,6 +278,20 @@ const commercialModal = `
       </form>
 `;
 
+const changeDetails = `
+      <h1>Add new user name and password</h1>
+      <form class="addNewClient">
+        <div class="rowForm">
+          <lable class="nameLable">User name: </lable>
+          <input type="text" class="newUsernameInput">
+        </div>
+        <div class="rowForm">
+          <lable class="nameLable">Password: </lable>
+          <input type="text" class="newPasswordInput">
+        </div>
+      </form>
+`
+
 const openModal = function (type) {
   modal.innerHTML = "";
   modal.insertAdjacentHTML(
@@ -288,6 +303,8 @@ const openModal = function (type) {
     modal.insertAdjacentHTML("beforeend", clientModal);
   } else if (type === "commercial") {
     modal.insertAdjacentHTML("beforeend", commercialModal);
+  } else if (type === "change details") {
+    modal.insertAdjacentHTML("beforeend", changeDetails);
   }
 
   modal.classList.remove("hidden");
@@ -311,6 +328,8 @@ const saveDetails = function (type) {
     saveNewClient();
   } else if (type === "commercial") {
     saveNewComm();
+  } else if (type === "change details") {
+    saveNewDetails();
   }
   closeModal();
 };
@@ -361,12 +380,28 @@ const getClient = function (name) {
   return clientToUpdate;
 };
 
+const saveNewDetails = function () {
+  const newUsername = document.querySelector(".newUsernameInput");
+  const newPassword = document.querySelector(".newPasswordInput");
+  
+  if (newUsername.value === '' || newPassword.value === '') {
+    alert("You must enter username and password");
+  } else {
+    socket.emit("notifyServerToChangeAdminPassword", newUsername.value, newPassword.value);
+  }
+};
+
+
 addNewClientBtn.addEventListener("click", () => {
   openModal("client");
 });
 
 addNewCommBtn.addEventListener("click", () => {
   openModal("commercial");
+});
+
+changeDetailsBtn.addEventListener("click", () => {
+  openModal("change details");
 });
 
 displayClients();
