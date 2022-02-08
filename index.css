@@ -25,10 +25,14 @@ body {
   padding-bottom: 30px;
   margin-bottom: 10px;
   /* border-bottom: 1px solid #777; */
-
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.loginText {
+  font-size: 19px;
+  font-weight: 330;
 }
 
 .login_form {
@@ -419,4 +423,15 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
   z-index: 5;
+}
+
+.btn_settings {
+  margin-right: 10px;
+  height: 25px;
+  width: 90px;
+  font-weight: 100;
+}
+
+.settingsIcon {
+  margin-right: 2px;
 }
