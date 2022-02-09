@@ -28,6 +28,7 @@
           class="login_input login_input--password"
         />
         <button class="login_btn">&#10148;</button>
+        <button class="btn btn_logout">Exit &#187;</button>
       </form>
     </div>
 
@@ -110,40 +111,41 @@
 <script type="text/javascript">
   var socket = io();
 
-  const inputLoginUsername = document.querySelector(".login_input--user");
-  const inputLoginPin = document.querySelector(".login_input--password");
-  const main = document.querySelector(".main");
-  const loginBtn = document.querySelector(".login_btn");
+  const inputLoginUsername = document.querySelector('.login_input--user');
+  const inputLoginPin = document.querySelector('.login_input--password');
+  const main = document.querySelector('.main');
+  const loginBtn = document.querySelector('.login_btn');
 
   socket.on(
-    "getAdmin",
+    'getAdmin',
     function (userServer, passwordServer, clientsCollection) {
-      loginBtn.addEventListener("click", function (event) {
+      loginBtn.addEventListener('click', function (event) {
         event.preventDefault();
 
         const user = inputLoginUsername.value;
         const password = Number(inputLoginPin.value);
 
         if (user === userServer && password === passwordServer) {
-          socket.emit("getResult", "true");
+          socket.emit('getResult', 'true');
           clientsArr = clientsCollection;
           displayClients();
           // main.style.visibility = 'visible';
+          adminInit();
         }
       });
     }
   );
 
-  socket.on("connectedUser", function (screenName) {
+  socket.on('connectedUser', function (screenName) {
     console.log(`user name = ${screenName}`);
-    addNewUserDataRow(screenName, "connected");
-    removeUserDataRow(screenName, "disconnected");
+    addNewUserDataRow(screenName, 'connected');
+    removeUserDataRow(screenName, 'disconnected');
   });
 
-  socket.on("disconnectUser", function (screenName) {
+  socket.on('disconnectUser', function (screenName) {
     console.log(`user name = ${screenName}`);
-    addNewUserDataRow(screenName, "disconnected");
-    removeUserDataRow(screenName, "connected");
+    addNewUserDataRow(screenName, 'disconnected');
+    removeUserDataRow(screenName, 'connected');
   });
 </script>
 <script src="./index.js"></script>

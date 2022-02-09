@@ -90,7 +90,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  /* visibility: hidden; */
+  visibility: hidden;
 }
 
 .main_top {
@@ -125,7 +125,8 @@ body {
 
 .client_list {
   flex: 0.6;
-  overflow: scroll;
+  /* overflow: scroll; */
+  overflow: auto;
 }
 
 .client_row {
@@ -430,8 +431,19 @@ body {
   height: 25px;
   width: 90px;
   font-weight: 100;
+
+  visibility: hidden;
 }
 
 .settingsIcon {
   margin-right: 2px;
+}
+
+.btn_logout {
+  margin-right: 10px;
+  height: 25px;
+  width: 70px;
+  font-weight: 100;
+
+  visibility: hidden;
 }
