@@ -4,12 +4,13 @@ const disconnectedClientsArr = [];
 
 /* ------------ Containers ------------ */
 
-const connectedListCont = document.querySelector(".client_list--connected");
+const connectedListCont = document.querySelector('.client_list--connected');
 const disconnectedListCont = document.querySelector(
-  ".client_list--disconnected"
+  '.client_list--disconnected'
 );
-const clientsContainer = document.querySelector(".clients_container");
-const commContainer = document.querySelector(".commercials_container");
+const clientsContainer = document.querySelector('.clients_container');
+const commContainer = document.querySelector('.commercials_container');
+const logoutBtn = document.querySelector('.btn_logout');
 
 /* ------------ User data functions ------------ */
 
@@ -23,19 +24,19 @@ const createUserDataRow = (clientName) => {
 };
 
 const addNewUserDataRow = (client, type) => {
-  if (type === "connected") {
+  if (type === 'connected') {
     connectedClients.push(client);
-  } else if (type === "disconnected") {
+  } else if (type === 'disconnected') {
     disconnectedClientsArr.push(client);
   }
   displayUserData(type);
 };
 
 const removeUserDataRow = (client, type) => {
-  if (type === "connected") {
+  if (type === 'connected') {
     const index = connectedClients.indexOf(client);
     connectedClients.splice(index, 1);
-  } else if (type === "disconnected") {
+  } else if (type === 'disconnected') {
     const index = disconnectedClientsArr.indexOf(client);
     disconnectedClientsArr.splice(index, 1);
   }
@@ -43,17 +44,17 @@ const removeUserDataRow = (client, type) => {
 };
 
 const displayUserData = (type) => {
-  if (type === "connected") {
-    connectedListCont.innerHTML = "";
+  if (type === 'connected') {
+    connectedListCont.innerHTML = '';
     connectedClients.forEach((client) => {
       const element = createUserDataRow(client);
-      connectedListCont.insertAdjacentHTML("afterbegin", element);
+      connectedListCont.insertAdjacentHTML('afterbegin', element);
     });
-  } else if (type === "disconnected") {
-    disconnectedListCont.innerHTML = "";
+  } else if (type === 'disconnected') {
+    disconnectedListCont.innerHTML = '';
     disconnectedClientsArr.forEach((client) => {
       const element = createUserDataRow(client);
-      disconnectedListCont.insertAdjacentHTML("afterbegin", element);
+      disconnectedListCont.insertAdjacentHTML('afterbegin', element);
     });
   }
 };
@@ -61,29 +62,29 @@ const displayUserData = (type) => {
 /* ------------ Clients functions ------------ */
 
 const displayClients = () => {
-  clientsContainer.innerHTML = "";
+  clientsContainer.innerHTML = '';
   clientsArr.forEach((client) => {
     const element = createClientRow(client);
-    clientsContainer.insertAdjacentHTML("afterbegin", element);
+    clientsContainer.insertAdjacentHTML('afterbegin', element);
   });
 
   // Remove client
-  const removeBtn = document.querySelectorAll(".btn_remove--client");
+  const removeBtn = document.querySelectorAll('.btn_remove--client');
   removeBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       const currUser = e.target.parentElement.parentElement.parentElement;
       const userID = currUser.id;
 
       currUser.remove();
-      socket.emit("notifyServerToRemoveClient", userID);
+      socket.emit('notifyServerToRemoveClient', userID);
     });
   });
 
   // Display client's commercials
-  const displayBtn = document.querySelectorAll(".btn_edit--client");
+  const displayBtn = document.querySelectorAll('.btn_edit--client');
   displayBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       const currUser = e.target.parentElement.parentElement.parentElement;
       const userID = currUser.id;
@@ -113,35 +114,35 @@ const createClientRow = (client) => {
 /* ------------ Commercials functions ------------ */
 
 function displayComm(client) {
-  const screenName = document.querySelector(".screenName");
+  const screenName = document.querySelector('.screenName');
   screenName.innerHTML = client.screen;
-  commContainer.innerHTML = "";
+  commContainer.innerHTML = '';
 
   client.commeracials.forEach((comm) => {
     const element = createCommercialsRow(comm);
-    commContainer.insertAdjacentHTML("afterbegin", element);
+    commContainer.insertAdjacentHTML('afterbegin', element);
   });
 
-  const removeCommBtn = document.querySelectorAll(".btn_remove--comm");
-  const editCommBtn = document.querySelectorAll(".btn_edit--comm");
-  const saveCommBtn = document.querySelectorAll(".btn_save--comm");
+  const removeCommBtn = document.querySelectorAll('.btn_remove--comm');
+  const editCommBtn = document.querySelectorAll('.btn_edit--comm');
+  const saveCommBtn = document.querySelectorAll('.btn_save--comm');
 
   // Remove specific commercial from client
   removeCommBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
 
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
 
       currComm.remove();
-      socket.emit("notifyServerToRemoveComm", client, commID);
+      socket.emit('notifyServerToRemoveComm', client, commID);
     });
   });
 
   // Edit spesific commercial
   editCommBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
@@ -156,7 +157,7 @@ function displayComm(client) {
 
   // Save commercial
   saveCommBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
@@ -187,14 +188,14 @@ function createCommercialsRow(comm) {
 }
 
 function editComm(comm, client, commElement) {
-  const duration = commElement.querySelector(".durationComm");
-  const imgUrl = commElement.querySelector(".imgUrlComm");
+  const duration = commElement.querySelector('.durationComm');
+  const imgUrl = commElement.querySelector('.imgUrlComm');
 
-  const durationInput = createInputElement("duration", duration.innerHTML);
+  const durationInput = createInputElement('duration', duration.innerHTML);
   commElement.replaceChild(durationInput, duration);
 
   // imgURL
-  const imgUrlInput = createInputElement("imgUrl", imgUrl.innerHTML);
+  const imgUrlInput = createInputElement('imgUrl', imgUrl.innerHTML);
   commElement.replaceChild(imgUrlInput, imgUrl);
 }
 
@@ -203,32 +204,32 @@ function saveComm(comm, client, currComm) {
     return;
   }
 
-  const durationInput = currComm.querySelector(".durationInput");
+  const durationInput = currComm.querySelector('.durationInput');
   comm.duration = Number(durationInput.value);
   const newDurationElem = createParagraphElement(
-    "durationComm",
+    'durationComm',
     durationInput.value
   );
   // imgURL
-  const imgUrlInput = currComm.querySelector(".imgUrlInput");
+  const imgUrlInput = currComm.querySelector('.imgUrlInput');
   comm.imgUrl = imgUrlInput.value;
-  const newImgUrlElem = createParagraphElement("imgUrlComm", imgUrlInput.value);
+  const newImgUrlElem = createParagraphElement('imgUrlComm', imgUrlInput.value);
   currComm.replaceChild(newDurationElem, durationInput);
   currComm.replaceChild(newImgUrlElem, imgUrlInput);
-  socket.emit("notifyServerToEditClient", client);
+  socket.emit('notifyServerToEditClient', client);
 }
 
 const createInputElement = function (type, value) {
-  const durationInputElem = document.createElement("input");
-  durationInputElem.type = "text";
+  const durationInputElem = document.createElement('input');
+  durationInputElem.type = 'text';
   durationInputElem.classList.add(`${type}Input`);
-  durationInputElem.classList.add("input");
+  durationInputElem.classList.add('input');
   durationInputElem.value = value;
   return durationInputElem;
 };
 
 const createParagraphElement = function (className, value) {
-  const durationPElem = document.createElement("p");
+  const durationPElem = document.createElement('p');
   durationPElem.classList.add(className);
   durationPElem.innerHTML = value;
   return durationPElem;
@@ -236,7 +237,7 @@ const createParagraphElement = function (className, value) {
 
 const inputIsExist = function (classArr) {
   for (let i = 0; i < classArr.length; i++) {
-    if (classArr[i].classList.contains("input")) {
+    if (classArr[i].classList.contains('input')) {
       return true;
     }
   }
@@ -245,11 +246,11 @@ const inputIsExist = function (classArr) {
 
 /* ------------ Modal's functions ------------ */
 
-const modal = document.querySelector(".modal");
-const overlay = document.querySelector(".overlay");
-const addNewClientBtn = document.querySelector(".addBtn--client");
-const addNewCommBtn = document.querySelector(".addBtn--comm");
-const changeDetailsBtn = document.querySelector(".btn_settings");
+const modal = document.querySelector('.modal');
+const overlay = document.querySelector('.overlay');
+const addNewClientBtn = document.querySelector('.addBtn--client');
+const addNewCommBtn = document.querySelector('.addBtn--comm');
+const changeDetailsBtn = document.querySelector('.btn_settings');
 
 const clientModal = `
       <h1>Add new client</h1>
@@ -290,52 +291,52 @@ const changeDetails = `
           <input type="text" class="newPasswordInput">
         </div>
       </form>
-`
+`;
 
 const openModal = function (type) {
-  modal.innerHTML = "";
+  modal.innerHTML = '';
   modal.insertAdjacentHTML(
-    "afterbegin",
+    'afterbegin',
     `<button class="close-modal">&times;</button>
   <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`
   );
-  if (type === "client") {
-    modal.insertAdjacentHTML("beforeend", clientModal);
-  } else if (type === "commercial") {
-    modal.insertAdjacentHTML("beforeend", commercialModal);
-  } else if (type === "change details") {
-    modal.insertAdjacentHTML("beforeend", changeDetails);
+  if (type === 'client') {
+    modal.insertAdjacentHTML('beforeend', clientModal);
+  } else if (type === 'commercial') {
+    modal.insertAdjacentHTML('beforeend', commercialModal);
+  } else if (type === 'change details') {
+    modal.insertAdjacentHTML('beforeend', changeDetails);
   }
 
-  modal.classList.remove("hidden");
-  overlay.classList.remove("hidden");
+  modal.classList.remove('hidden');
+  overlay.classList.remove('hidden');
 
-  const btnCloseModal = document.querySelector(".close-modal");
-  const saveBtn = document.querySelector(".saveDetails");
-  btnCloseModal.addEventListener("click", closeModal);
-  saveBtn.addEventListener("click", () => {
+  const btnCloseModal = document.querySelector('.close-modal');
+  const saveBtn = document.querySelector('.saveDetails');
+  btnCloseModal.addEventListener('click', closeModal);
+  saveBtn.addEventListener('click', () => {
     saveDetails(type);
   });
 };
 
 const closeModal = function () {
-  modal.classList.add("hidden");
-  overlay.classList.add("hidden");
+  modal.classList.add('hidden');
+  overlay.classList.add('hidden');
 };
 
 const saveDetails = function (type) {
-  if (type === "client") {
+  if (type === 'client') {
     saveNewClient();
-  } else if (type === "commercial") {
+  } else if (type === 'commercial') {
     saveNewComm();
-  } else if (type === "change details") {
+  } else if (type === 'change details') {
     saveNewDetails();
   }
   closeModal();
 };
 
 const saveNewClient = function () {
-  const newClientName = document.querySelector(".newNameInput");
+  const newClientName = document.querySelector('.newNameInput');
   const newClient = {
     screen: newClientName.value,
   };
@@ -343,30 +344,30 @@ const saveNewClient = function () {
   clientsArr.push(newClient);
   displayClients();
 
-  socket.emit("notifyServerToAddClient", newClient);
+  socket.emit('notifyServerToAddClient', newClient);
 };
 
 const saveNewComm = function () {
-  const clientInput = document.querySelector(".clientInput");
-  const durationInput = document.querySelector(".durationInput");
-  const imgUrlInput = document.querySelector(".imgURLInput");
+  const clientInput = document.querySelector('.clientInput');
+  const durationInput = document.querySelector('.durationInput');
+  const imgUrlInput = document.querySelector('.imgURLInput');
 
   const client = getClient(clientInput.value);
   // console.log(client);
   if (client == null) {
-    alert("Client not found..");
+    alert('Client not found..');
     return;
   }
   const newCommercial = {
     id: client.commeracials.length + 1,
     duration: durationInput.value,
     imgUrl: imgUrlInput.value,
-    img: "./photos/Hanukkah.jpg",
+    img: './photos/Hanukkah.jpg',
   };
 
   client.commeracials.push(newCommercial);
   displayComm(client);
-  socket.emit("notifyServerToAddCommercial", client.screen, newCommercial);
+  socket.emit('notifyServerToAddCommercial', client.screen, newCommercial);
 };
 
 const getClient = function (name) {
@@ -380,28 +381,71 @@ const getClient = function (name) {
   return clientToUpdate;
 };
 
+let newAdminName, newAdminPass;
+
 const saveNewDetails = function () {
-  const newUsername = document.querySelector(".newUsernameInput");
-  const newPassword = document.querySelector(".newPasswordInput");
-  
+  const newUsername = document.querySelector('.newUsernameInput');
+  const newPassword = document.querySelector('.newPasswordInput');
+
   if (newUsername.value === '' || newPassword.value === '') {
-    alert("You must enter username and password");
+    alert('You must enter username and password');
   } else {
-    socket.emit("notifyServerToChangeAdminPassword", newUsername.value, newPassword.value);
+    newAdminName = newUsername.value;
+    newAdminPass = newPassword.value;
+
+    socket.emit(
+      'notifyServerToChangeAdminPassword',
+      newUsername.value,
+      newPassword.value
+    );
   }
 };
 
-
-addNewClientBtn.addEventListener("click", () => {
-  openModal("client");
+addNewClientBtn.addEventListener('click', () => {
+  openModal('client');
 });
 
-addNewCommBtn.addEventListener("click", () => {
-  openModal("commercial");
+addNewCommBtn.addEventListener('click', () => {
+  openModal('commercial');
 });
 
-changeDetailsBtn.addEventListener("click", () => {
-  openModal("change details");
+changeDetailsBtn.addEventListener('click', () => {
+  openModal('change details');
+});
+
+const adminInit = () => {
+  main.style.visibility = 'visible';
+  changeDetailsBtn.style.visibility = 'visible';
+  logoutBtn.style.visibility = 'visible';
+
+  inputLoginUsername.disabled = true;
+  inputLoginPin.disabled = true;
+  loginBtn.disabled = true;
+};
+
+logoutBtn.addEventListener('click', function (event) {
+  event.preventDefault();
+  main.style.visibility = 'hidden';
+  changeDetailsBtn.style.visibility = 'hidden';
+  logoutBtn.style.visibility = 'hidden';
+
+  inputLoginUsername.value = '';
+  inputLoginPin.value = '';
+
+  inputLoginUsername.disabled = false;
+  inputLoginPin.disabled = false;
+  loginBtn.disabled = false;
+
+  console.log(newAdminName, newAdminPass);
+
+  loginBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (
+      inputLoginUsername.value === newAdminName &&
+      inputLoginPin.value === newAdminPass
+    )
+      adminInit();
+  });
 });
 
 displayClients();
