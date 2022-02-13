@@ -15,6 +15,9 @@ app.use(express.static(__dirname + "/"));
 /* ---------------mongodb declarations--------------- */
 const mongodb = require("mongodb");
 const { emit } = require("process");
+const { syncBuiltinESMExports } = require("module");
+const { system } = require("nodemon/lib/config");
+const { resolve } = require("path");
 const uri = "mongodb://127.0.0.1:27017";
 const client = new mongodb.MongoClient(uri);
 
@@ -33,6 +36,19 @@ client.connect((err) => {
   } else console.log("***Connection with mongodb created");
 
   const db = client.db(databaseName);
+
+  /* ------If the USERS DATA collection already exists------ */
+  db.collection("usersData").insertMany([{ id: 0 }], function () {
+    if (db.listCollections({ name: "usersData" }).hasNext()) {
+      db.dropCollection("usersData", function (err) {
+        if (err) console.log(err);
+      });
+
+      db.createCollection("usersData", function (err, res) {
+        if (err) console.log(err);
+      });
+    }
+  });
 
   /* ------If the ADMIN collection already exists------ */
   db.collection(adminCollection).insertMany([{ id: 0 }], function () {
@@ -101,7 +117,7 @@ client.connect((err) => {
               img: "./TuBshvat.jpg",
               imgUrl:
                 "https://g3d5t8s9.stackpathcdn.com/wp-content/uploads/2020/02/tubishvat.jpg.webp",
-              duration: 2000,
+              duration: 4000,
             },
             {
               id: 2,
@@ -119,21 +135,21 @@ client.connect((err) => {
               id: 1,
               img: "./Passover.jpg",
               imgUrl: "https://www.ies.org.il/images/passover.jpg",
-              duration: 2000,
+              duration: 1000,
             },
             {
               id: 2,
               img: "./Sukkot.png",
               imgUrl:
                 "https://cdn.w600.comps.canstockphoto.com/happy-sukkot-icon-set-flat-cartoon-eps-vector_csp50440247.jpg",
-              duration: 2000,
+              duration: 3000,
             },
             {
               id: 3,
               img: "./HappyPurim.png",
               imgUrl:
                 "https://chabad-purim.org.il/wp-content/uploads/2021/10/%D7%A4%D7%95%D7%A8%D7%99%D7%9D-%D7%A0%D7%99%D7%99%D7%93.png",
-              duration: 2000,
+              duration: 5000,
             },
           ],
         },
@@ -166,25 +182,75 @@ app.get("/", function (req, res) {
 });
 
 /* --------------'localhost:8080/screen-x'-------------- */
-app.get("/:uid", function (request, response) {
-  let id = request.params.uid;
 
-  // if (id == 'screen-1' || id == 'screen-2' || id == 'screen-3')
+let id;
+let datetime;
+let flag = false;
+let flagConn = false;
+let flagEmit = false;
 
-  if (screensNamesArr.includes(id)) connectToSocket(response, id);
-  else if (id === "admin") adminFunc(response);
-  else response.sendFile(path.join(__dirname, "/homePage.html"));
+app.get("/:uid", async function (request, response) {
+  let currId = request.params.uid;
+  let currDatetime = new Date().toString().slice(0, 24);
+
+  if (currId.includes("screen")) {
+    if (id == null && datetime == null) {
+      id = currId;
+      datetime = currDatetime;
+      await callConnectToSocket(response, currId);
+    } else if (id === currId && datetime !== currDatetime) {
+      await callConnectToSocket(response, id);
+      datetime = currDatetime;
+    } else if (id !== currId) {
+      id = currId;
+      datetime = currDatetime;
+      await callConnectToSocket(response, currId);
+    }
+  } else if (currId === "admin") {
+    id = "admin";
+    adminFunc(response);
+  } else {
+    response.sendFile(path.join(__dirname, "/homePage.html"));
+  }
 });
 
+function callConnectToSocket(response, id) {
+  if (flag == false) {
+    connectToSocket(response, id);
+  }
+}
+
 /* -------------------- user login -------------------- */
+
 function connectToSocket(response, screenName) {
+  flag = true;
+  flagConn = false;
+
+  io.sockets.on("connection", async function (socket) {
+    flagEmit = false;
+
+    if (id === screenName) {
+      await callConnection(socket, screenName);
+    }
+    if ((id === screenName || id === "admin") && flagEmit === false) {
+      flagEmit = true;
+      io.sockets.emit("connectedUser", screenName);
+    }
+  });
+
+  response.sendFile(path.join(__dirname, "/screen.html"));
+  flag = false;
+}
+
+function callConnection(socket, screenName) {
   let dbo;
   let randID;
 
-  io.sockets.on("connection", function (socket) {
+  if (flagConn == false) {
+    flagConn = true;
+
     client.connect(function (err, db) {
       dbo = db.db(databaseName);
-      var datetime = new Date().toString().slice(0, 24);
       randID = Math.trunc(Math.random() * 1000000) + 1;
 
       var obj = {
@@ -194,9 +260,11 @@ function connectToSocket(response, screenName) {
         LogoutTime: "Still connected",
       };
 
-      dbo.collection("usersData").insertOne(obj, function (err, res) {
-        if (err) console.log(err);
-      });
+      if (id === obj.user) {
+        dbo.collection("usersData").insertOne(obj, function (err, res) {
+          if (err) console.log(err);
+        });
+      }
 
       dbo
         .collection(collectionName)
@@ -208,13 +276,9 @@ function connectToSocket(response, screenName) {
           socket.emit("getJson", result, screenName);
         });
     });
-
-    /* ----------------- update admin -------------- */
-    io.sockets.emit("connectedUser", screenName);
     /* ----------------- disconnect -------------- */
     myDisconnect(socket, dbo, randID);
-  });
-  response.sendFile(path.join(__dirname, "/screen.html"));
+  }
 }
 
 /* -------------------- user logout -------------------- */
