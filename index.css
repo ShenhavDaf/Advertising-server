@@ -90,7 +90,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  /* visibility: hidden; */
+  visibility: hidden;
 }
 
 .main_top {
