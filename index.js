@@ -1,6 +1,7 @@
 let clientsArr = [];
 const connectedClients = [];
 const disconnectedClientsArr = [];
+let currUserId;
 
 /* ------------ Containers ------------ */
 
@@ -73,11 +74,11 @@ const displayClients = () => {
   removeBtn.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const currUser = e.target.parentElement.parentElement.parentElement;
-      const userID = currUser.id;
+      currUser = e.target.parentElement.parentElement.parentElement;
+      currUserId = currUser.id;
 
       currUser.remove();
-      socket.emit('notifyServerToRemoveClient', userID);
+      // socket.emit('notifyServerToRemoveClient', userID);
     });
   });
 
@@ -136,7 +137,7 @@ function displayComm(client) {
       const commID = currComm.id;
 
       currComm.remove();
-      socket.emit('notifyServerToRemoveComm', client, commID);
+      // socket.emit('notifyServerToRemoveComm', client, commID);
     });
   });
 
@@ -216,7 +217,7 @@ function saveComm(comm, client, currComm) {
   const newImgUrlElem = createParagraphElement('imgUrlComm', imgUrlInput.value);
   currComm.replaceChild(newDurationElem, durationInput);
   currComm.replaceChild(newImgUrlElem, imgUrlInput);
-  socket.emit('notifyServerToEditClient', client);
+  // socket.emit('notifyServerToEditClient', client);
 }
 
 const createInputElement = function (type, value) {
@@ -248,7 +249,7 @@ const inputIsExist = function (classArr) {
 
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
-const addNewClientBtn = document.querySelector('.addBtn--client');
+// const addNewClientBtn = document.querySelector('.addBtn--client');
 const addNewCommBtn = document.querySelector('.addBtn--comm');
 const changeDetailsBtn = document.querySelector('.btn_settings');
 
@@ -264,10 +265,6 @@ const clientModal = `
 const commercialModal = `
       <h1>Add new client</h1>
       <form class="addNewClient">
-        <div class="rowForm">
-          <lable class="nameLable">Client: </lable>
-          <input type="text" class="clientInput">
-        </div>
         <div class="rowForm">
           <lable class="nameLable">Duration: </lable>
           <input type="text" class="durationInput">
@@ -300,9 +297,8 @@ const openModal = function (type) {
     `<button class="close-modal">&times;</button>
   <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`
   );
-  if (type === 'client') {
-    modal.insertAdjacentHTML('beforeend', clientModal);
-  } else if (type === 'commercial') {
+
+  if (type === 'commercial') {
     modal.insertAdjacentHTML('beforeend', commercialModal);
   } else if (type === 'change details') {
     modal.insertAdjacentHTML('beforeend', changeDetails);
@@ -325,9 +321,7 @@ const closeModal = function () {
 };
 
 const saveDetails = function (type) {
-  if (type === 'client') {
-    saveNewClient();
-  } else if (type === 'commercial') {
+  if (type === 'commercial') {
     saveNewComm();
   } else if (type === 'change details') {
     saveNewDetails();
@@ -335,29 +329,18 @@ const saveDetails = function (type) {
   closeModal();
 };
 
-const saveNewClient = function () {
-  const newClientName = document.querySelector('.newNameInput');
-  const newClient = {
-    screen: newClientName.value,
-  };
-
-  clientsArr.push(newClient);
-  displayClients();
-
-  socket.emit('notifyServerToAddClient', newClient);
-};
-
 const saveNewComm = function () {
   const clientInput = document.querySelector('.clientInput');
   const durationInput = document.querySelector('.durationInput');
   const imgUrlInput = document.querySelector('.imgURLInput');
 
-  const client = getClient(clientInput.value);
-  // console.log(client);
+  const client = getClient(currUserId);
+
   if (client == null) {
-    alert('Client not found..');
+    alert('You must choose client first');
     return;
   }
+
   const newCommercial = {
     id: client.commeracials.length + 1,
     duration: durationInput.value,
@@ -367,7 +350,7 @@ const saveNewComm = function () {
 
   client.commeracials.push(newCommercial);
   displayComm(client);
-  socket.emit('notifyServerToAddCommercial', client.screen, newCommercial);
+  // socket.emit('notifyServerToAddCommercial', client.screen, newCommercial);
 };
 
 const getClient = function (name) {
@@ -393,17 +376,17 @@ const saveNewDetails = function () {
     newAdminName = newUsername.value;
     newAdminPass = newPassword.value;
 
-    socket.emit(
-      'notifyServerToChangeAdminPassword',
-      newUsername.value,
-      newPassword.value
-    );
+    // socket.emit(
+    //   'notifyServerToChangeAdminPassword',
+    //   newUsername.value,
+    //   newPassword.value
+    // );
   }
 };
 
-addNewClientBtn.addEventListener('click', () => {
-  openModal('client');
-});
+// addNewClientBtn.addEventListener('click', () => {
+//   openModal('client');
+// });
 
 addNewCommBtn.addEventListener('click', () => {
   openModal('commercial');

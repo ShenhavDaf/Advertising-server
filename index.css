@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color: rgb(0, 0, 0);
   background-color: #dad8d8 !important;
   height: 100vh;
@@ -90,7 +90,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 
 .main_top {
@@ -121,6 +121,17 @@ body {
   text-transform: uppercase;
   font-weight: 300;
   color: #fff;
+}
+
+.title2 {
+  color: #333;
+  font-weight: 360;
+  margin-top: 1px;
+  padding-bottom: 5px;
+  flex: 0.1;
+  border-bottom: 1px solid #333;
+  width: 100%;
+  text-align: center;
 }
 
 .client_list {
