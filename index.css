@@ -316,6 +316,7 @@ body {
   width: 300px;
   height: 100%;
   border-right: 1px solid #eee;
+  overflow: scroll;
 }
 
 .commercial_card h1 {
@@ -324,6 +325,8 @@ body {
 
 .commercial_card p {
   font-size: 15px;
+  width: 80%;
+  /* overflow: scroll; */
 }
 
 .commercial_card img {

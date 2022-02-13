@@ -47,12 +47,14 @@ const removeUserDataRow = (client, type) => {
 const displayUserData = (type) => {
   if (type === "connected") {
     connectedListCont.innerHTML = "";
+    // connectedClients = [...new Set(connectedClients)];
     connectedClients.forEach((client) => {
       const element = createUserDataRow(client);
       connectedListCont.insertAdjacentHTML("afterbegin", element);
     });
   } else if (type === "disconnected") {
     disconnectedListCont.innerHTML = "";
+    // disconnectedClientsArr = [...new Set(disconnectedClientsArr)];
     disconnectedClientsArr.forEach((client) => {
       const element = createUserDataRow(client);
       disconnectedListCont.insertAdjacentHTML("afterbegin", element);

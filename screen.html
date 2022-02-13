@@ -18,12 +18,12 @@
   </body>
 </html>
 
-<!-- <script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
 <script type="text/javascript">
   var socket = io();
 
-  socket.on('getJson', function (clientJson, screenName) {
+  socket.on("getJson", function (clientJson, screenName) {
     let commArray = clientJson[0].commeracials;
 
     let i = 0;
@@ -31,23 +31,23 @@
     let firstTime = commArray[0].duration * 10;
 
     document.getElementById(
-      'top_title'
+      "top_title"
     ).textContent = `Hello, ${clientJson[0].screen}`;
 
-    document.getElementById('myImg').src = commArray[0].img;
+    document.getElementById("myImg").src = commArray[0].img;
 
     let run = setInterval(function () {
       myFunc(), firstTime;
     });
 
     function myFunc() {
-      var path = '/' + screenName;
+      var path = "/" + screenName;
       // currentPage = location.pathname;
 
-      document.getElementById('myImg').src = commArray[i].img;
+      document.getElementById("myImg").src = commArray[i].img;
 
       clearInterval(run);
-      firstTime = commArray[i].duration * 10;
+      firstTime = commArray[i].duration;
 
       i++;
       if (i === arrSize) i = 0;
@@ -55,7 +55,7 @@
       run = setInterval(myFunc, firstTime);
     }
   });
-</script> -->
+</script>
 
 <!-- -------------------------------------------- -->
 <!-- -------------------------------------------- -->
@@ -65,7 +65,7 @@
 <!-- -------------------------------------------- -->
 <!-- -------------------------------------------- -->
 
-<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="/socket.io/socket.io.js"></script>
 
 <script type="text/javascript">
   var socket = io();
@@ -97,4 +97,4 @@
       if (i === arrSize) i = 0;
     }, func(i));
   });
-</script>
+</script> -->
