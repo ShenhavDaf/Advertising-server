@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: rgb(0, 0, 0);
   background-color: #dad8d8 !important;
   height: 100vh;
@@ -222,7 +222,8 @@ body {
 
 .clients_container {
   grid-row: 2 / span 3;
-  overflow: scroll;
+  /* overflow: scroll; */
+  overflow: auto;
   width: 95%;
   align-self: center;
 }
@@ -294,7 +295,8 @@ body {
 
 .commercials_container {
   display: flex;
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
+  overflow-x: auto;
   width: 95%;
   align-self: center;
   height: 100%;
@@ -316,7 +318,8 @@ body {
   width: 300px;
   height: 100%;
   border-right: 1px solid #eee;
-  overflow: scroll;
+  /* overflow: scroll; */
+  overflow: auto;
 }
 
 .commercial_card h1 {
