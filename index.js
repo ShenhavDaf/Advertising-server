@@ -1,6 +1,7 @@
 let clientsArr = [];
 const connectedClients = [];
 const disconnectedClientsArr = [];
+const AllClients = ["screen-1", "screen-2", "screen-3"];
 let currUserId;
 
 /* ------------ Containers ------------ */
@@ -47,14 +48,12 @@ const removeUserDataRow = (client, type) => {
 const displayUserData = (type) => {
   if (type === "connected") {
     connectedListCont.innerHTML = "";
-    // connectedClients = [...new Set(connectedClients)];
     connectedClients.forEach((client) => {
       const element = createUserDataRow(client);
       connectedListCont.insertAdjacentHTML("afterbegin", element);
     });
   } else if (type === "disconnected") {
     disconnectedListCont.innerHTML = "";
-    // disconnectedClientsArr = [...new Set(disconnectedClientsArr)];
     disconnectedClientsArr.forEach((client) => {
       const element = createUserDataRow(client);
       disconnectedListCont.insertAdjacentHTML("afterbegin", element);
@@ -77,9 +76,9 @@ const displayClients = () => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       currUser = e.target.parentElement.parentElement.parentElement;
-
+      console.log(currUser.id);
+      socket.emit("notifyServerToRemoveClient", currUser.id);
       currUser.remove();
-      socket.emit("notifyServerToRemoveClient", userID);
     });
   });
 
@@ -202,6 +201,7 @@ function editComm(comm, client, commElement) {
 }
 
 function saveComm(comm, client, currComm) {
+  console.log(currComm);
   if (!inputIsExist(currComm.children)) {
     return;
   }
@@ -218,7 +218,12 @@ function saveComm(comm, client, currComm) {
   const newImgUrlElem = createParagraphElement("imgUrlComm", imgUrlInput.value);
   currComm.replaceChild(newDurationElem, durationInput);
   currComm.replaceChild(newImgUrlElem, imgUrlInput);
-  socket.emit("notifyServerToEditClient", client);
+  console.log(client.commeracials[currComm.id - 1]); // the changed commercial.
+  socket.emit(
+    "notifyServerToEditClient",
+    client.screen,
+    client.commeracials[currComm.id - 1]
+  );
 }
 
 const createInputElement = function (type, value) {

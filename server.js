@@ -27,6 +27,9 @@ const adminCollection = "Admin";
 
 let screensNamesArr = [];
 let mongoData = [];
+// let screen1Arr=[];
+// let screen2Arr=[];
+// let screen3Arr=[];
 
 /* ---------------mongodb connection--------------- */
 client.connect((err) => {
@@ -193,7 +196,7 @@ app.get("/:uid", async function (request, response) {
   let currId = request.params.uid;
   let currDatetime = new Date().toString().slice(0, 24);
 
-  if (currId.includes("screen")) {
+  if (screensNamesArr.includes(currId)) {
     if (id == null && datetime == null) {
       id = currId;
       datetime = currDatetime;
@@ -333,23 +336,63 @@ function adminFunc(response) {
               );
             }
           });
+
+        for (let i = 0; i < screensNamesArr.length; i++) {
+          console.log("screen is - " + screenName);
+          if (screensNamesArr[i] === screenName) {
+            screensNamesArr.splice(i, 1);
+          }
+        }
       });
 
-      socket.on("notifyServerToEditClient", function (client) {
+      /*OLD*/
+      // socket.on("notifyServerToEditClient", function (client) {
+      //   dbo
+      //     .collection(collectionName)
+      //     .updateMany(
+      //       { screen: client.screen },
+      //       {
+      //         $set: { commeracials: client.commeracials },
+      //       }
+      //     )
+      //     .then((result) => {
+      //       if (result.deletedCount === 1) {
+      //         console.log("Successfully deleted one document.");
+      //       } else {
+      //         console.log(
+      //           "No documents matched the query. Deleted 0 documents."
+      //         );
+      //       }
+      //     });
+      // });
+
+      /*NEW*/
+      socket.on("notifyServerToEditClient", function (screenName, editedComm) {
+        console.log(editedComm.id);
         dbo
           .collection(collectionName)
           .updateMany(
-            { screen: client.screen },
             {
-              $set: { commeracials: client.commeracials },
+              screen: screenName,
+              "commeracials.id": editedComm.id,
+            },
+            {
+              $set: {
+                "commeracials.$": {
+                  id: editedComm.id,
+                  img: editedComm.img,
+                  imgUrl: editedComm.imgUrl,
+                  duration: Number(editedComm.duration),
+                },
+              },
             }
           )
           .then((result) => {
-            if (result.deletedCount === 1) {
-              console.log("Successfully deleted one document.");
+            if (result.matchedCount === 1) {
+              console.log("Successfully updated one document.");
             } else {
               console.log(
-                "No documents matched the query. Deleted 0 documents."
+                "No documents matched the query. Updated 0 documents."
               );
             }
           });
