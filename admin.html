@@ -10,10 +10,6 @@
   </head>
   <body>
     <div class="login">
-      <button class="btn btn_settings">
-        <img class="settingsIcon" src="./icons/settingsIcon.png" />
-        Settings
-      </button>
       <p class="loginText">Log in to get started..</p>
       <form class="login_form">
         <input
@@ -28,7 +24,6 @@
           class="login_input login_input--password"
         />
         <button class="login_btn">&#10148;</button>
-        <button class="btn btn_logout">Exit &#187;</button>
       </form>
     </div>
 
@@ -48,9 +43,6 @@
       <div class="main_bottom">
         <!-- Clients -->
         <div class="main_left">
-          <!-- <button class="addBtn addBtn--client">
-            ADD new client<img class="arrow-hover" src="./icons/addIcon.png" />
-          </button> -->
           <p class="title2 listClients_title">Clients</p>
           <div class="clients_container">
             <div class="client_card hidden" id="abc">
@@ -129,7 +121,7 @@
           socket.emit("getResult", "true");
           clientsArr = clientsCollection;
           displayClients();
-          main.style.visibility = "visible";
+          displayUserData('disconnected');
           adminInit();
         }
       });

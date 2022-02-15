@@ -22,8 +22,8 @@ body {
 
 .login {
   width: 80%;
-  padding-bottom: 30px;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
   /* border-bottom: 1px solid #777; */
   display: flex;
   justify-content: center;
@@ -33,6 +33,7 @@ body {
 .loginText {
   font-size: 19px;
   font-weight: 330;
+  margin-right: 2px;
 }
 
 .login_form {
@@ -81,6 +82,13 @@ body {
 .btn--sort:focus {
   outline: none;
   color: #777;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .main {
@@ -401,7 +409,7 @@ body {
 }
 
 .modal h1 {
-  font-size: 25px;
+  font-size: 20px;
   margin-bottom: 15px;
 }
 
@@ -444,23 +452,47 @@ body {
 }
 
 .btn_settings {
-  margin-right: 10px;
+  margin-right: 3px;
   height: 25px;
   width: 90px;
   font-weight: 100;
 
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 
 .settingsIcon {
-  margin-right: 2px;
+  margin-right: 1px;
 }
 
-.btn_logout {
-  margin-right: 10px;
+/* .btn_logout {
   height: 25px;
   width: 70px;
   font-weight: 100;
 
   visibility: hidden;
+} */
+
+.top_title {
+  margin-bottom: 40px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #eee;
+  width: 600px;
+  text-align: center;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 340;
+  font-size: 30px;
+  text-transform: uppercase;
+  color: #666666;
+}
+
+.myImg {
+  width: 700px;
+  height: 400px;
+  border-radius: 10px;
+}
+
+.titleHomePage {
+  margin-top: 50px;
+  border: none;
 }
