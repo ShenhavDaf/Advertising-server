@@ -128,6 +128,7 @@
         if (user === userServer && password === passwordServer) {
           socket.emit("getResult", "true");
           clientsArr = clientsCollection;
+          console.log(clientsArr);
           displayClients();
           displayUserData(connectedArr, disconnectedArr);
           adminInit();
