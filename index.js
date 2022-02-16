@@ -1,17 +1,17 @@
 let clientsArr = [];
 let currUserId;
-const imgFormat = ['.jpg', '.jpeg', '.png', '.svg'];
+const imgFormat = [".jpg", ".jpeg", ".png", ".svg"];
 
 /* ------------ Containers ------------ */
 
 const body = document.body;
-const loginElem = document.querySelector('.login');
-const connectedListCont = document.querySelector('.client_list--connected');
+const loginElem = document.querySelector(".login");
+const connectedListCont = document.querySelector(".client_list--connected");
 const disconnectedListCont = document.querySelector(
-  '.client_list--disconnected'
+  ".client_list--disconnected"
 );
-const clientsContainer = document.querySelector('.clients_container');
-const commContainer = document.querySelector('.commercials_container');
+const clientsContainer = document.querySelector(".clients_container");
+const commContainer = document.querySelector(".commercials_container");
 
 /* ------------ User data functions ------------ */
 
@@ -25,45 +25,45 @@ const createUserDataRow = (clientName) => {
 };
 
 const displayUserData = (connectedarr, disconnectedArr) => {
-  connectedListCont.innerHTML = '';
+  connectedListCont.innerHTML = "";
   connectedarr.forEach((client) => {
     const element = createUserDataRow(client);
-    connectedListCont.insertAdjacentHTML('afterbegin', element);
+    connectedListCont.insertAdjacentHTML("afterbegin", element);
   });
 
-  disconnectedListCont.innerHTML = '';
+  disconnectedListCont.innerHTML = "";
   disconnectedArr.forEach((client) => {
     const element = createUserDataRow(client);
-    disconnectedListCont.insertAdjacentHTML('afterbegin', element);
+    disconnectedListCont.insertAdjacentHTML("afterbegin", element);
   });
 };
 
 /* ------------ Clients functions ------------ */
 
 const displayClients = () => {
-  clientsContainer.innerHTML = '';
+  clientsContainer.innerHTML = "";
   clientsArr.forEach((client) => {
     const element = createClientRow(client);
-    clientsContainer.insertAdjacentHTML('afterbegin', element);
+    clientsContainer.insertAdjacentHTML("afterbegin", element);
   });
 
   // Remove client
-  const removeBtn = document.querySelectorAll('.btn_remove--client');
+  const removeBtn = document.querySelectorAll(".btn_remove--client");
   removeBtn.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
       currUser = e.target.parentElement.parentElement.parentElement;
-      socket.emit('notifyServerToRemoveClient', currUser.id);
+      socket.emit("notifyServerToRemoveClient", currUser.id);
       currUser.remove();
-      commContainer.innerHTML = '';
-      document.querySelector('.screenName').innerHTML = '';
+      document.querySelector(".screenName").innerHTML = "";
+      commContainer.innerHTML = "";
     });
   });
 
   // Display client's commercials
-  const displayBtn = document.querySelectorAll('.btn_edit--client');
+  const displayBtn = document.querySelectorAll(".btn_edit--client");
   displayBtn.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
       const currUser = e.target.parentElement.parentElement.parentElement;
       currUserId = currUser.id;
@@ -93,22 +93,22 @@ const createClientRow = (client) => {
 /* ------------ Commercials functions ------------ */
 
 function displayComm(client) {
-  const screenName = document.querySelector('.screenName');
+  const screenName = document.querySelector(".screenName");
   screenName.innerHTML = client.screen;
-  commContainer.innerHTML = '';
+  commContainer.innerHTML = "";
 
   client.commeracials.forEach((comm) => {
     const element = createCommercialsRow(comm);
-    commContainer.insertAdjacentHTML('afterbegin', element);
+    commContainer.insertAdjacentHTML("afterbegin", element);
   });
 
-  const removeCommBtn = document.querySelectorAll('.btn_remove--comm');
-  const editCommBtn = document.querySelectorAll('.btn_edit--comm');
-  const saveCommBtn = document.querySelectorAll('.btn_save--comm');
+  const removeCommBtn = document.querySelectorAll(".btn_remove--comm");
+  const editCommBtn = document.querySelectorAll(".btn_edit--comm");
+  const saveCommBtn = document.querySelectorAll(".btn_save--comm");
 
   // Remove specific commercial from client
   removeCommBtn.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
 
       const currComm = e.target.parentElement.parentElement.parentElement;
@@ -123,13 +123,13 @@ function displayComm(client) {
       });
 
       currComm.remove();
-      socket.emit('notifyServerToRemoveComm', client, commID);
+      socket.emit("notifyServerToRemoveComm", client, commID);
     });
   });
 
   // Edit spesific commercial
   editCommBtn.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
@@ -144,7 +144,7 @@ function displayComm(client) {
 
   // Save commercial
   saveCommBtn.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.preventDefault();
       const currComm = e.target.parentElement.parentElement.parentElement;
       const commID = currComm.id;
@@ -177,14 +177,14 @@ function createCommercialsRow(comm) {
 }
 
 function editComm(commElement) {
-  const duration = commElement.querySelector('.durationComm');
-  const imgUrl = commElement.querySelector('.imgUrlComm');
+  const duration = commElement.querySelector(".durationComm");
+  const imgUrl = commElement.querySelector(".imgUrlComm");
 
-  const durationInput = createInputElement('duration', duration.innerHTML);
+  const durationInput = createInputElement("duration", duration.innerHTML);
   commElement.replaceChild(durationInput, duration);
 
   // imgURL
-  const imgUrlInput = createInputElement('imgUrl', imgUrl.innerHTML);
+  const imgUrlInput = createInputElement("imgUrl", imgUrl.innerHTML);
   commElement.replaceChild(imgUrlInput, imgUrl);
 }
 
@@ -193,21 +193,21 @@ function saveComm(comm, client, currComm) {
     return;
   }
 
-  const durationInput = currComm.querySelector('.durationInput');
+  const durationInput = currComm.querySelector(".durationInput");
   comm.duration = Number(durationInput.value);
 
   if (isNaN(comm.duration)) {
-    alert('Duration must be a number. Please edit 😊');
+    alert("Duration must be a number. Please edit 😊");
   }
 
   const newDurationElem = createParagraphElement(
-    'durationComm',
+    "durationComm",
     durationInput.value
   );
 
   // imgURL
-  const imgUrlInput = currComm.querySelector('.imgUrlInput');
-  const img = currComm.querySelector('.commercial_img');
+  const imgUrlInput = currComm.querySelector(".imgUrlInput");
+  const img = currComm.querySelector(".commercial_img");
 
   comm.imgUrl = imgUrlInput.value;
   img.src = imgUrlInput.value;
@@ -215,34 +215,34 @@ function saveComm(comm, client, currComm) {
   if (!isImageFormatCorrect(imgUrlInput.value)) {
     alert("'Your url is not correct. Please edit 😊'");
     comm.imgUrl =
-      'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+      "https://media.flaticon.com/dist/min/img/collections/collection-tour.svg";
     img.src =
-      'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+      "https://media.flaticon.com/dist/min/img/collections/collection-tour.svg";
   }
 
-  const newImgUrlElem = createParagraphElement('imgUrlComm', comm.imgUrl);
+  const newImgUrlElem = createParagraphElement("imgUrlComm", comm.imgUrl);
 
   currComm.replaceChild(newDurationElem, durationInput);
   currComm.replaceChild(newImgUrlElem, imgUrlInput);
 
   socket.emit(
-    'notifyServerToEditComm',
+    "notifyServerToEditComm",
     client.screen,
     client.commeracials[currComm.id - 1]
   );
 }
 
 const createInputElement = function (type, value) {
-  const durationInputElem = document.createElement('input');
-  durationInputElem.type = 'text';
+  const durationInputElem = document.createElement("input");
+  durationInputElem.type = "text";
   durationInputElem.classList.add(`${type}Input`);
-  durationInputElem.classList.add('input');
+  durationInputElem.classList.add("input");
   durationInputElem.value = value;
   return durationInputElem;
 };
 
 const createParagraphElement = function (className, value) {
-  const durationPElem = document.createElement('p');
+  const durationPElem = document.createElement("p");
   durationPElem.classList.add(className);
   durationPElem.innerHTML = value;
   return durationPElem;
@@ -250,7 +250,7 @@ const createParagraphElement = function (className, value) {
 
 const inputIsExist = function (classArr) {
   for (let i = 0; i < classArr.length; i++) {
-    if (classArr[i].classList.contains('input')) {
+    if (classArr[i].classList.contains("input")) {
       return true;
     }
   }
@@ -259,9 +259,9 @@ const inputIsExist = function (classArr) {
 
 /* ------------ Modal's functions ------------ */
 
-const modal = document.querySelector('.modal');
-const overlay = document.querySelector('.overlay');
-const addNewCommBtn = document.querySelector('.addBtn--comm');
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const addNewCommBtn = document.querySelector(".addBtn--comm");
 
 const commercialModal = `
       <h1>Add new commercial</h1>
@@ -292,47 +292,47 @@ const changeDetails = `
 `;
 
 const openModal = function (type) {
-  modal.innerHTML = '';
+  modal.innerHTML = "";
   modal.insertAdjacentHTML(
-    'afterbegin',
+    "afterbegin",
     `<button class="close-modal">&times;</button>
   <button class="saveDetails"><img class="saveIcon" src="./icons/saveIconB.png"/></button>`
   );
 
-  if (type === 'commercial') {
-    modal.insertAdjacentHTML('beforeend', commercialModal);
-  } else if (type === 'change details') {
-    modal.insertAdjacentHTML('beforeend', changeDetails);
+  if (type === "commercial") {
+    modal.insertAdjacentHTML("beforeend", commercialModal);
+  } else if (type === "change details") {
+    modal.insertAdjacentHTML("beforeend", changeDetails);
   }
 
-  modal.classList.remove('hidden');
-  overlay.classList.remove('hidden');
+  modal.classList.remove("hidden");
+  overlay.classList.remove("hidden");
 
-  const btnCloseModal = document.querySelector('.close-modal');
-  const saveBtn = document.querySelector('.saveDetails');
-  btnCloseModal.addEventListener('click', closeModal);
-  saveBtn.addEventListener('click', () => {
+  const btnCloseModal = document.querySelector(".close-modal");
+  const saveBtn = document.querySelector(".saveDetails");
+  btnCloseModal.addEventListener("click", closeModal);
+  saveBtn.addEventListener("click", () => {
     saveDetails(type);
   });
 };
 
 const closeModal = function () {
-  modal.classList.add('hidden');
-  overlay.classList.add('hidden');
+  modal.classList.add("hidden");
+  overlay.classList.add("hidden");
 };
 
 const saveDetails = function (type) {
-  if (type === 'commercial') {
+  if (type === "commercial") {
     saveNewComm();
-  } else if (type === 'change details') {
+  } else if (type === "change details") {
     saveNewDetails();
   }
   closeModal();
 };
 
 const saveNewComm = function () {
-  const durationInput = document.querySelector('.durationInput');
-  const imgUrlInput = document.querySelector('.imgURLInput');
+  const durationInput = document.querySelector(".durationInput");
+  const imgUrlInput = document.querySelector(".imgURLInput");
 
   let urlValue = imgUrlInput.value;
   let imgValue = `${imgUrlInput.value}`;
@@ -340,20 +340,20 @@ const saveNewComm = function () {
   const client = getClient(currUserId);
 
   if (client == null) {
-    alert('You must choose client first');
+    alert("You must choose client first");
     return;
-  } else if (durationInput.value == '' || imgUrlInput.value == '') {
-    alert('You did not enter all values');
+  } else if (durationInput.value == "" || imgUrlInput.value == "") {
+    alert("You did not enter all values");
   } else {
     if (isNaN(durationInput.value)) {
-      alert('Duration must be a number. Please edit 😊');
+      alert("Duration must be a number. Please edit 😊");
     }
 
     if (!isImageFormatCorrect(imgUrlInput.value)) {
-      alert('Your url is not correct. Please edit 😊');
+      alert("Your url is not correct. Please edit 😊");
 
       urlValue =
-        'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+        "https://media.flaticon.com/dist/min/img/collections/collection-tour.svg";
       imgValue = `${urlValue}`;
     }
 
@@ -366,7 +366,7 @@ const saveNewComm = function () {
 
     client.commeracials.push(newCommercial);
     displayComm(client);
-    socket.emit('notifyServerToAddCommercial', client.screen, newCommercial);
+    socket.emit("notifyServerToAddCommercial", client.screen, newCommercial);
   }
 };
 
@@ -383,20 +383,20 @@ const getClient = function (name) {
 let newAdminName, newAdminPass;
 
 const saveNewDetails = function () {
-  const newUsername = document.querySelector('.newUsernameInput');
-  const newPassword = document.querySelector('.newPasswordInput');
+  const newUsername = document.querySelector(".newUsernameInput");
+  const newPassword = document.querySelector(".newPasswordInput");
 
-  if (newUsername.value === '' || newPassword.value === '') {
-    alert('You must enter username and password');
+  if (newUsername.value === "" || newPassword.value === "") {
+    alert("You must enter username and password");
   } else {
     if (isNaN(newPassword.value)) {
-      alert('The Password must be a number');
+      alert("The Password must be a number");
     } else {
       newAdminName = newUsername.value;
       newAdminPass = newPassword.value;
 
       socket.emit(
-        'notifyServerToChangeAdminPassword',
+        "notifyServerToChangeAdminPassword",
         newUsername.value,
         newPassword.value
       );
@@ -404,8 +404,8 @@ const saveNewDetails = function () {
   }
 };
 
-addNewCommBtn.addEventListener('click', () => {
-  openModal('commercial');
+addNewCommBtn.addEventListener("click", () => {
+  openModal("commercial");
 });
 
 const login = `
@@ -439,21 +439,21 @@ const adminConnected = `
 `;
 
 const adminInit = () => {
-  main.style.visibility = 'visible';
+  main.style.visibility = "visible";
 
   inputLoginUsername.disabled = true;
   inputLoginPin.disabled = true;
   loginBtn.disabled = true;
 
   body.removeChild(loginElem);
-  body.insertAdjacentHTML('afterbegin', adminConnected);
+  body.insertAdjacentHTML("afterbegin", adminConnected);
   addEventListenerToButtons();
 };
 
 const addEventListenerToButtons = () => {
-  const changeDetailsBtn = document.querySelector('.btn_settings');
-  changeDetailsBtn.addEventListener('click', () => {
-    openModal('change details');
+  const changeDetailsBtn = document.querySelector(".btn_settings");
+  changeDetailsBtn.addEventListener("click", () => {
+    openModal("change details");
   });
 };
 
