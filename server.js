@@ -26,6 +26,8 @@ const collectionName = "Clients";
 const adminCollection = "Admin";
 
 let screensNamesArr = [];
+const connectedClientsArr = [];
+const disconnectedArr = ["screen-1", "screen-2", "screen-3"];
 let mongoData = [];
 // let screen1Arr=[];
 // let screen2Arr=[];
@@ -248,10 +250,19 @@ function connectToSocket(response, screenName) {
       await callConnection(socket, screenName);
     }
 
-    if ((id === screenName || id === "admin") && flagEmit === false) {
+    if (id === screenName && flagEmit === false) {
       flagEmit = true;
-      io.sockets.emit("connectedUser", screenName);
-      //   io.sockets.emit("connectedUser", id);
+
+      connectedClientsArr.push(screenName);
+      const index = disconnectedArr.indexOf(screenName);
+      if (index !== -1) {
+        disconnectedArr.splice(index, 1);
+      }
+      io.sockets.emit("connectedUser", connectedClientsArr, disconnectedArr);
+      console.log(connectedClientsArr);
+    } else if (id === "admin") {
+      console.log(connectedClientsArr);
+      io.sockets.emit("connectedUser", connectedClientsArr, disconnectedArr);
     }
   });
   if (id === "admin") {
@@ -333,7 +344,9 @@ function callAdminConnection(socket, screenName) {
             "getAdmin",
             result[0].userName,
             result[0].password,
-            mongoData
+            mongoData,
+            connectedClientsArr,
+            disconnectedArr
           );
         });
 
@@ -438,16 +451,21 @@ function callAdminConnection(socket, screenName) {
     socket.on("disconnect", function () {
       console.log("admin disconnected");
     });
-    // flagAdminConn = false;
   }
-
-  // response.sendFile(path.join(__dirname, "/admin.html"));
 }
 
 /* -------------------- user logout -------------------- */
 function myDisconnect(socket, dbo, randID) {
   socket.on("disconnect", function () {
-    io.sockets.emit("disconnectUser", socket.name);
+    console.log(11111);
+    let index = connectedClientsArr.indexOf(socket.name);
+    connectedClientsArr.splice(index, 1);
+    index = connectedClientsArr.indexOf(socket.name);
+    console.log("index: " + index);
+    if (index === -1) disconnectedArr.push(socket.name);
+
+    console.log(connectedClientsArr, disconnectedArr);
+    io.sockets.emit("disconnectUser", connectedClientsArr, disconnectedArr);
     console.log(`${socket.name} disconnected!`);
 
     var datetime = new Date().toString().slice(0, 24);
@@ -604,8 +622,8 @@ function myDisconnect(socket, dbo, randID) {
 //   response.sendFile(path.join(__dirname, "/admin.html"));
 // }
 
-function sendUserDataToAdmin(socket, screenName) {
-  socket.on("userConnect", function () {
-    io.sockets.emit("connectedUser", screenName);
-  });
-}
+// function sendUserDataToAdmin(socket, screenName) {
+//   socket.on("userConnect", function () {
+//     io.sockets.emit("connectedUser", screenName);
+//   });
+// }

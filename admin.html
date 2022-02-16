@@ -63,7 +63,6 @@
         <div class="main_right">
           <div class="top_commercial">
             <p class="screenName"></p>
-            <!-- <input type="text" id="clientNameInput" placeholder="" /> -->
             <button class="addBtn addBtn--comm">
               ADD new Commercial<img
                 class="arrow-hover"
@@ -110,7 +109,13 @@
 
   socket.on(
     "getAdmin",
-    function (userServer, passwordServer, clientsCollection) {
+    function (
+      userServer,
+      passwordServer,
+      clientsCollection,
+      connectedArr,
+      disconnectedArr
+    ) {
       loginBtn.addEventListener("click", function (event) {
         event.preventDefault();
         console.log("usersServer " + userServer);
@@ -124,7 +129,7 @@
           socket.emit("getResult", "true");
           clientsArr = clientsCollection;
           displayClients();
-          displayUserData("disconnected");
+          displayUserData(connectedArr, disconnectedArr);
           adminInit();
         } else {
           alert("User name or password are incorrect");
@@ -133,16 +138,12 @@
     }
   );
 
-  socket.on("connectedUser", function (screenName) {
-    console.log(`user name = ${screenName}`);
-    addNewUserDataRow(screenName, "connected");
-    removeUserDataRow(screenName, "disconnected");
+  socket.on("connectedUser", function (connectedArr, disconnectedArr) {
+    displayUserData(connectedArr, disconnectedArr);
   });
 
-  socket.on("disconnectUser", function (screenName) {
-    console.log(`user name = ${screenName}`);
-    addNewUserDataRow(screenName, "disconnected");
-    removeUserDataRow(screenName, "connected");
+  socket.on("disconnectUser", function (connectedArr, disconnectedArr) {
+    displayUserData(connectedArr, disconnectedArr);
   });
 </script>
 <script src="./index.js"></script>

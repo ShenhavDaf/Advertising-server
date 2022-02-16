@@ -1,6 +1,4 @@
 let clientsArr = [];
-const connectedClients = [];
-const disconnectedClientsArr = ["screen-1", "screen-2", "screen-3"];
 let currUserId;
 
 /* ------------ Containers ------------ */
@@ -25,46 +23,19 @@ const createUserDataRow = (clientName) => {
   return element;
 };
 
-const addNewUserDataRow = (client, type) => {
-  if (type === "connected") {
-    connectedClients.push(client);
-  } else if (type === "disconnected") {
-    if (!connectedClients.includes(client)) {
-      disconnectedClientsArr.push(client);
-    }
-  }
-  displayUserData(type);
-};
+const displayUserData = (connectedarr, disconnectedArr) => {
+  connectedListCont.innerHTML = "";
+  connectedarr.forEach((client) => {
+    const element = createUserDataRow(client);
+    connectedListCont.insertAdjacentHTML("afterbegin", element);
+  });
 
-const removeUserDataRow = (client, type) => {
-  if (type === "connected") {
-    const index = connectedClients.indexOf(client);
-    connectedClients.splice(index, 1);
-  } else if (type === "disconnected") {
-    const index = disconnectedClientsArr.indexOf(client);
-    disconnectedClientsArr.splice(index, 1);
-  }
-  displayUserData(type);
+  disconnectedListCont.innerHTML = "";
+  disconnectedArr.forEach((client) => {
+    const element = createUserDataRow(client);
+    disconnectedListCont.insertAdjacentHTML("afterbegin", element);
+  });
 };
-
-const displayUserData = (type) => {
-  if (type === "connected") {
-    connectedListCont.innerHTML = "";
-    connectedClients.forEach((client) => {
-      const element = createUserDataRow(client);
-      connectedListCont.insertAdjacentHTML("afterbegin", element);
-    });
-  } else if (type === "disconnected") {
-    disconnectedListCont.innerHTML = "";
-    disconnectedClientsArr.reverse();
-    disconnectedClientsArr.forEach((client) => {
-      const element = createUserDataRow(client);
-      disconnectedListCont.insertAdjacentHTML("afterbegin", element);
-    });
-  }
-};
-
-displayUserData("disconnected");
 
 /* ------------ Clients functions ------------ */
 
@@ -161,7 +132,7 @@ function displayComm(client) {
 
       client.commeracials.forEach((comm) => {
         if (comm.id === Number(commID)) {
-          editComm(comm, client, currComm);
+          editComm(currComm);
         }
       });
     });
@@ -201,7 +172,7 @@ function createCommercialsRow(comm) {
   return element;
 }
 
-function editComm(comm, client, commElement) {
+function editComm(commElement) {
   const duration = commElement.querySelector(".durationComm");
   const imgUrl = commElement.querySelector(".imgUrlComm");
 
@@ -350,21 +321,22 @@ const saveNewComm = function () {
 
   if (client == null) {
     alert("You must choose client first");
+    return;
   } else if (durationInput.value == "" || imgUrlInput.value == "") {
     alert("You did not enter all values");
+  } else {
+    const newCommercial = {
+      id: client.commeracials.length + 1,
+      duration: Number(durationInput.value),
+      imgUrl: imgUrlInput.value,
+      img: `${imgUrlInput.value}`,
+      // img: './photos/Hanukkah.jpg',
+    };
+
+    client.commeracials.push(newCommercial);
+    displayComm(client);
+    socket.emit("notifyServerToAddCommercial", client.screen, newCommercial);
   }
-
-  const newCommercial = {
-    id: client.commeracials.length + 1,
-    duration: Number(durationInput.value),
-    imgUrl: imgUrlInput.value,
-    img: `${imgUrlInput.value}`,
-    // img: './photos/Hanukkah.jpg',
-  };
-
-  client.commeracials.push(newCommercial);
-  displayComm(client);
-  socket.emit("notifyServerToAddCommercial", client.screen, newCommercial);
 };
 
 const getClient = function (name) {
@@ -387,14 +359,18 @@ const saveNewDetails = function () {
   if (newUsername.value === "" || newPassword.value === "") {
     alert("You must enter username and password");
   } else {
-    newAdminName = newUsername.value;
-    newAdminPass = newPassword.value;
+    if (isNaN(newPassword.value)) {
+      alert("The Password must be a number");
+    } else {
+      newAdminName = newUsername.value;
+      newAdminPass = newPassword.value;
 
-    socket.emit(
-      "notifyServerToChangeAdminPassword",
-      newUsername.value,
-      newPassword.value
-    );
+      socket.emit(
+        "notifyServerToChangeAdminPassword",
+        newUsername.value,
+        newPassword.value
+      );
+    }
   }
 };
 
@@ -446,33 +422,7 @@ const adminInit = () => {
 
 const addEventListenerToButtons = () => {
   const changeDetailsBtn = document.querySelector(".btn_settings");
-  // const logoutBtn = document.querySelector('.btn_logout');
-
   changeDetailsBtn.addEventListener("click", () => {
     openModal("change details");
   });
-
-  // logoutBtn.addEventListener('click', function (event) {
-  //   event.preventDefault();
-  //   const adminConnectedElem = document.querySelector('.buttons');
-  //   main.style.visibility = 'hidden';
-  //   body.removeChild(adminConnectedElem);
-  //   body.insertAdjacentHTML('afterbegin', login);
-
-  //   inputLoginUsername.value = '';
-  //   inputLoginPin.value = '';
-
-  //   inputLoginUsername.disabled = false;
-  //   inputLoginPin.disabled = false;
-  //   loginBtn.disabled = false;
-
-  //   loginBtn.addEventListener('click', function (e) {
-  //     e.preventDefault();
-  //     if (
-  //       inputLoginUsername.value === newAdminName &&
-  //       inputLoginPin.value === newAdminPass
-  //     )
-  //       adminInit();
-  //   });
-  // });
 };
