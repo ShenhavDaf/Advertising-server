@@ -101,13 +101,13 @@ client.connect((err) => {
           commeracials: [
             {
               id: 1,
-              imgUrl: "https://i.ytimg.com/vi/0IqiRIsplOA/maxresdefault.jpg",
+              imgUrl: "https://cdn.osxdaily.com/wp-content/uploads/2019/08/test-the-impossible-mac-advertisment.jpg",
               duration: 1000,
             },
             {
               id: 2,
               imgUrl:
-                "https://i.pinimg.com/originals/99/b0/7a/99b07ac3aa6483343346c17b4cfe87ff.jpg",
+                "https://www.gizmochina.com/wp-content/uploads/2021/09/iPhone-13-Pro-featured.png",
               duration: 2000,
             },
           ],
@@ -118,13 +118,13 @@ client.connect((err) => {
             {
               id: 1,
               imgUrl:
-                "https://cdn.fedweb.org/fed-99/2/Happy-Tu-BShevat-img07.jpg",
+                "https://m.media-amazon.com/images/M/MV5BMjkzMzM1YWEtYzI5YS00ZGMyLWE5NjAtYzhiYWZmNDY2ODJjXkEyXkFqcGdeQXVyMjA0OTk3OTg@._V1_.jpg",
               duration: 4000,
             },
             {
               id: 2,
               imgUrl:
-                "https://static1.bigstockphoto.com/9/8/2/large2/289393843.jpg",
+                "https://www.incimages.com/uploaded_files/image/1920x1080/chickenbigmac_220981.png",
               duration: 2000,
             },
           ],
@@ -134,19 +134,19 @@ client.connect((err) => {
           commeracials: [
             {
               id: 1,
-              imgUrl: "https://www.ies.org.il/images/passover.jpg",
+              imgUrl: "https://cached.imagescaler.hbpl.co.uk/resize/scaleWidth/815/cached.offlinehbpl.hbpl.co.uk/news/OMC/719F37E0-A7DC-4633-75ECEB408400BC61.jpg",
               duration: 1000,
             },
             {
               id: 2,
               imgUrl:
-                "https://cdn.w600.comps.canstockphoto.com/happy-sukkot-icon-set-flat-cartoon-eps-vector_csp50440247.jpg",
+                "https://i.ytimg.com/vi/xlXw4hC2fmA/maxresdefault.jpg",
               duration: 3000,
             },
             {
               id: 3,
               imgUrl:
-                "https://chabad-purim.org.il/wp-content/uploads/2021/10/%D7%A4%D7%95%D7%A8%D7%99%D7%9D-%D7%A0%D7%99%D7%99%D7%93.png",
+                "https://www.natalieportman.com/wp-content/uploads/2013/08/missdiorleparfum.jpg",
               duration: 5000,
             },
           ],
@@ -457,17 +457,13 @@ function callAdminConnection(socket, screenName) {
 /* -------------------- user logout -------------------- */
 function myDisconnect(socket, dbo, randID) {
   socket.on("disconnect", function () {
-    console.log(11111);
     let index = connectedClientsArr.indexOf(socket.name);
     connectedClientsArr.splice(index, 1);
     index = connectedClientsArr.indexOf(socket.name);
     console.log("index: " + index);
     if (index === -1) disconnectedArr.push(socket.name);
 
-    console.log(connectedClientsArr, disconnectedArr);
     io.sockets.emit("disconnectUser", connectedClientsArr, disconnectedArr);
-    console.log(`${socket.name} disconnected!`);
-
     var datetime = new Date().toString().slice(0, 24);
 
     dbo
