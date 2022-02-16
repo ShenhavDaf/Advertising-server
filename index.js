@@ -1,18 +1,18 @@
 let clientsArr = [];
 const connectedClients = [];
-const disconnectedClientsArr = [];
-const AllClients = ["screen-1", "screen-2", "screen-3"];
+const disconnectedClientsArr = ["screen-1", "screen-2", "screen-3"];
 let currUserId;
 
 /* ------------ Containers ------------ */
 
+const body = document.body;
+const loginElem = document.querySelector(".login");
 const connectedListCont = document.querySelector(".client_list--connected");
 const disconnectedListCont = document.querySelector(
   ".client_list--disconnected"
 );
 const clientsContainer = document.querySelector(".clients_container");
 const commContainer = document.querySelector(".commercials_container");
-const logoutBtn = document.querySelector(".btn_logout");
 
 /* ------------ User data functions ------------ */
 
@@ -29,7 +29,9 @@ const addNewUserDataRow = (client, type) => {
   if (type === "connected") {
     connectedClients.push(client);
   } else if (type === "disconnected") {
-    disconnectedClientsArr.push(client);
+    if (!connectedClients.includes(client)) {
+      disconnectedClientsArr.push(client);
+    }
   }
   displayUserData(type);
 };
@@ -54,12 +56,15 @@ const displayUserData = (type) => {
     });
   } else if (type === "disconnected") {
     disconnectedListCont.innerHTML = "";
+    disconnectedClientsArr.reverse();
     disconnectedClientsArr.forEach((client) => {
       const element = createUserDataRow(client);
       disconnectedListCont.insertAdjacentHTML("afterbegin", element);
     });
   }
 };
+
+displayUserData("disconnected");
 
 /* ------------ Clients functions ------------ */
 
@@ -269,19 +274,9 @@ const inputIsExist = function (classArr) {
 const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const addNewCommBtn = document.querySelector(".addBtn--comm");
-const changeDetailsBtn = document.querySelector(".btn_settings");
 
-const clientModal = `
-      <h1>Add new client</h1>
-      <form class="addNewClient">
-        <div class="rowForm">
-          <lable class="nameLable">Client Name: </lable>
-          <input type="text" class="newNameInput">
-        </div>
-      </form>
-`;
 const commercialModal = `
-      <h1>Add new client</h1>
+      <h1>Add new commercial</h1>
       <form class="addNewClient">
         <div class="rowForm">
           <lable class="nameLable">Duration: </lable>
@@ -295,7 +290,7 @@ const commercialModal = `
 `;
 
 const changeDetails = `
-      <h1>Add new user name and password</h1>
+      <h1 class="changeDetailsTitle">Add new user name and password</h1>
       <form class="addNewClient">
         <div class="rowForm">
           <lable class="nameLable">User name: </lable>
@@ -350,17 +345,18 @@ const saveDetails = function (type) {
 const saveNewComm = function () {
   const durationInput = document.querySelector(".durationInput");
   const imgUrlInput = document.querySelector(".imgURLInput");
-  console.log(currUserId);
+
   const client = getClient(currUserId);
-  console.log(client);
+
   if (client == null) {
     alert("You must choose client first");
-    return;
+  } else if (durationInput.value == "" || imgUrlInput.value == "") {
+    alert("You did not enter all values");
   }
 
   const newCommercial = {
     id: client.commeracials.length + 1,
-    duration: durationInput.value,
+    duration: Number(durationInput.value),
     imgUrl: imgUrlInput.value,
     img: `${imgUrlInput.value}`,
     // img: './photos/Hanukkah.jpg',
@@ -406,43 +402,77 @@ addNewCommBtn.addEventListener("click", () => {
   openModal("commercial");
 });
 
-changeDetailsBtn.addEventListener("click", () => {
-  openModal("change details");
-});
+const login = `
+<div class="login">
+      <p class="loginText">Log in to get started..</p>
+      <form class="login_form">
+        <input
+          type="text"
+          placeholder="User name"
+          class="login_input login_input--user"
+        />
+        <input
+          type="text"
+          placeholder="Password"
+          maxlength="4"
+          class="login_input login_input--password"
+        />
+        <button class="login_btn">&#10148;</button>
+      </form>
+    </div>
+`;
+
+const adminConnected = `
+<div class="buttons">
+      <p class="loginText">Admin connected</p>
+      <button class="btn btn_settings">
+        <img class="settingsIcon" src="./icons/settingsIcon.png" />
+        Settings
+      </button>
+    </div>
+`;
 
 const adminInit = () => {
   main.style.visibility = "visible";
-  changeDetailsBtn.style.visibility = "visible";
-  // logoutBtn.style.visibility = "visible";
 
   inputLoginUsername.disabled = true;
   inputLoginPin.disabled = true;
   loginBtn.disabled = true;
+
+  body.removeChild(loginElem);
+  body.insertAdjacentHTML("afterbegin", adminConnected);
+  addEventListenerToButtons();
 };
 
-// logoutBtn.addEventListener("click", function (event) {
-//   event.preventDefault();
-//   main.style.visibility = "hidden";
-//   changeDetailsBtn.style.visibility = "hidden";
-//   logoutBtn.style.visibility = "hidden";
+const addEventListenerToButtons = () => {
+  const changeDetailsBtn = document.querySelector(".btn_settings");
+  // const logoutBtn = document.querySelector('.btn_logout');
 
-//   inputLoginUsername.value = "";
-//   inputLoginPin.value = "";
+  changeDetailsBtn.addEventListener("click", () => {
+    openModal("change details");
+  });
 
-//   inputLoginUsername.disabled = false;
-//   inputLoginPin.disabled = false;
-//   loginBtn.disabled = false;
+  // logoutBtn.addEventListener('click', function (event) {
+  //   event.preventDefault();
+  //   const adminConnectedElem = document.querySelector('.buttons');
+  //   main.style.visibility = 'hidden';
+  //   body.removeChild(adminConnectedElem);
+  //   body.insertAdjacentHTML('afterbegin', login);
 
-//   console.log(newAdminName, newAdminPass);
+  //   inputLoginUsername.value = '';
+  //   inputLoginPin.value = '';
 
-//   // loginBtn.addEventListener("click", function (e) {
-//   //   e.preventDefault();
-//   //   if (
-//   //     inputLoginUsername.value === newAdminName &&
-//   //     inputLoginPin.value === newAdminPass
-//   //   )
-//   //     adminInit();
-//   // });
-// });
+  //   inputLoginUsername.disabled = false;
+  //   inputLoginPin.disabled = false;
+  //   loginBtn.disabled = false;
 
-displayClients();
+  //   loginBtn.addEventListener('click', function (e) {
+  //     e.preventDefault();
+  //     if (
+  //       inputLoginUsername.value === newAdminName &&
+  //       inputLoginPin.value === newAdminPass
+  //     )
+  //       adminInit();
+  //   });
+  // });
+};
