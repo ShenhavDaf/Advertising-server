@@ -56,6 +56,7 @@ const displayClients = () => {
       socket.emit('notifyServerToRemoveClient', currUser.id);
       currUser.remove();
       commContainer.innerHTML = '';
+      document.querySelector('.screenName').innerHTML = '';
     });
   });
 
