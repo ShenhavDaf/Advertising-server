@@ -1,5 +1,6 @@
 let clientsArr = [];
 let currUserId;
+const imgFormat = ['.jpg', '.jpeg', '.png', '.svg'];
 
 /* ------------ Containers ------------ */
 
@@ -52,7 +53,6 @@ const displayClients = () => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       currUser = e.target.parentElement.parentElement.parentElement;
-      console.log(currUser.id);
       socket.emit('notifyServerToRemoveClient', currUser.id);
       currUser.remove();
       commContainer.innerHTML = '';
@@ -188,29 +188,42 @@ function editComm(commElement) {
 }
 
 function saveComm(comm, client, currComm) {
-  console.log(currComm);
   if (!inputIsExist(currComm.children)) {
     return;
   }
 
   const durationInput = currComm.querySelector('.durationInput');
   comm.duration = Number(durationInput.value);
+
+  if (isNaN(comm.duration)) {
+    alert('Duration must be a number. Please edit 😊');
+  }
+
   const newDurationElem = createParagraphElement(
     'durationComm',
     durationInput.value
   );
+
   // imgURL
   const imgUrlInput = currComm.querySelector('.imgUrlInput');
+  const img = currComm.querySelector('.commercial_img');
+
   comm.imgUrl = imgUrlInput.value;
-  const newImgUrlElem = createParagraphElement('imgUrlComm', imgUrlInput.value);
+  img.src = imgUrlInput.value;
+
+  if (!isImageFormatCorrect(imgUrlInput.value)) {
+    alert("'Your url is not correct. Please edit 😊'");
+    comm.imgUrl =
+      'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+    img.src =
+      'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+  }
+
+  const newImgUrlElem = createParagraphElement('imgUrlComm', comm.imgUrl);
 
   currComm.replaceChild(newDurationElem, durationInput);
   currComm.replaceChild(newImgUrlElem, imgUrlInput);
 
-  const img = currComm.querySelector('.commercial_img');
-  img.src = `${imgUrlInput.value}`;
-
-  console.log(client.commeracials[currComm.id - 1]); // the changed commercial.
   socket.emit(
     'notifyServerToEditComm',
     client.screen,
@@ -320,6 +333,9 @@ const saveNewComm = function () {
   const durationInput = document.querySelector('.durationInput');
   const imgUrlInput = document.querySelector('.imgURLInput');
 
+  let urlValue = imgUrlInput.value;
+  let imgValue = `${imgUrlInput.value}`;
+
   const client = getClient(currUserId);
 
   if (client == null) {
@@ -328,12 +344,23 @@ const saveNewComm = function () {
   } else if (durationInput.value == '' || imgUrlInput.value == '') {
     alert('You did not enter all values');
   } else {
+    if (isNaN(durationInput.value)) {
+      alert('Duration must be a number. Please edit 😊');
+    }
+
+    if (!isImageFormatCorrect(imgUrlInput.value)) {
+      alert('Your url is not correct. Please edit 😊');
+
+      urlValue =
+        'https://media.flaticon.com/dist/min/img/collections/collection-tour.svg';
+      imgValue = `${urlValue}`;
+    }
+
     const newCommercial = {
       id: client.commeracials.length + 1,
       duration: Number(durationInput.value),
-      imgUrl: imgUrlInput.value,
-      img: `${imgUrlInput.value}`,
-      // img: './photos/Hanukkah.jpg',
+      imgUrl: urlValue,
+      img: imgValue,
     };
 
     client.commeracials.push(newCommercial);
@@ -343,7 +370,6 @@ const saveNewComm = function () {
 };
 
 const getClient = function (name) {
-  console.log(name);
   let clientToUpdate;
   clientsArr.forEach((client) => {
     if (client.screen === name) {
@@ -428,4 +454,15 @@ const addEventListenerToButtons = () => {
   changeDetailsBtn.addEventListener('click', () => {
     openModal('change details');
   });
+};
+
+const isImageFormatCorrect = function (url) {
+  let myflag = 0;
+
+  imgFormat.forEach((finish) => {
+    if (url.indexOf(finish) != -1 || url.indexOf(finish.toUpperCase) != -1) {
+      myflag = 1;
+    }
+  });
+  return myflag;
 };
