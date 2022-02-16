@@ -55,6 +55,7 @@ const displayClients = () => {
       console.log(currUser.id);
       socket.emit("notifyServerToRemoveClient", currUser.id);
       currUser.remove();
+      commContainer.innerHTML = "";
     });
   });
 
@@ -209,7 +210,7 @@ function saveComm(comm, client, currComm) {
 
   console.log(client.commeracials[currComm.id - 1]); // the changed commercial.
   socket.emit(
-    "notifyServerToEditClient",
+    "notifyServerToEditComm",
     client.screen,
     client.commeracials[currComm.id - 1]
   );

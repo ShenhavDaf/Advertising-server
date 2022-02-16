@@ -18,6 +18,7 @@ const { emit } = require("process");
 const { syncBuiltinESMExports } = require("module");
 const { system } = require("nodemon/lib/config");
 const { resolve } = require("path");
+const cli = require("nodemon/lib/cli");
 const uri = "mongodb://127.0.0.1:27017";
 const client = new mongodb.MongoClient(uri);
 
@@ -351,6 +352,8 @@ function callAdminConnection(socket, screenName) {
         });
 
       socket.on("notifyServerToRemoveClient", function (screenName) {
+        mongoData = mongoData.filter((c) => c.screen !== screenName);
+
         dbo
           .collection(collectionName)
           .deleteMany({
@@ -374,8 +377,16 @@ function callAdminConnection(socket, screenName) {
         }
       });
 
-      socket.on("notifyServerToEditClient", function (screenName, editedComm) {
-        console.log(editedComm.id);
+      // TODO: change name
+      socket.on("notifyServerToEditComm", function (screenName, editedComm) {
+        const client = mongoData.find((c) => c.screen === screenName);
+        client.commeracials.forEach((comm) => {
+          if (comm.id === editedComm.id) {
+            comm.duration = Number(editedComm.duration);
+            comm.imgUrl = editedComm.imgUrl;
+          }
+        });
+
         dbo
           .collection(collectionName)
           .updateMany(
@@ -387,7 +398,6 @@ function callAdminConnection(socket, screenName) {
               $set: {
                 "commeracials.$": {
                   id: editedComm.id,
-                  img: editedComm.img,
                   imgUrl: editedComm.imgUrl,
                   duration: Number(editedComm.duration),
                 },
@@ -406,6 +416,12 @@ function callAdminConnection(socket, screenName) {
       });
 
       socket.on("notifyServerToRemoveComm", function (client, Commid) {
+        mongoData = mongoData.filter((c) => c.screen !== client.screen);
+        client.commeracials = client.commeracials.filter(
+          (comm) => comm.id !== Commid
+        );
+        mongoData.push(client);
+
         Commid = Number(Commid);
         dbo
           .collection(collectionName)
@@ -420,6 +436,10 @@ function callAdminConnection(socket, screenName) {
         function (screenName, commercial) {
           console.log("screen : " + screenName);
           console.log("commercial : " + commercial);
+
+          const client = mongoData.find((c) => c.screen === screenName);
+          client.commeracials.push(commercial);
+
           dbo.collection(collectionName).updateMany(
             { screen: screenName },
             {
@@ -430,12 +450,12 @@ function callAdminConnection(socket, screenName) {
           );
         }
       );
-      socket.on("notifyServerToAddClient", function (newClient) {
-        dbo.collection(collectionName).insertOne({
-          screen: newClient.screen,
-          commeracials: [],
-        });
-      });
+      // socket.on("notifyServerToAddClient", function (newClient) {
+      //   dbo.collection(collectionName).insertOne({
+      //     screen: newClient.screen,
+      //     commeracials: [],
+      //   });
+      // });
       socket.on(
         "notifyServerToChangeAdminPassword",
         function (adminName, adminPassword) {
