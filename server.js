@@ -1,56 +1,54 @@
-"use strict";
+'use strict';
 
 /* ---------------express declarations--------------- */
-const path = require("path");
-const express = require("express");
+const path = require('path');
+const express = require('express');
 const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 const port = process.env.PORT || 8080;
 app.use(express.json());
-app.use(express.static(__dirname + "/photos"));
-app.use(express.static(__dirname + "/"));
+app.use(express.static(__dirname + '/photos'));
+app.use(express.static(__dirname + '/'));
 
 /* ---------------mongodb declarations--------------- */
-const mongodb = require("mongodb");
-const { emit } = require("process");
-const { syncBuiltinESMExports } = require("module");
-const { system } = require("nodemon/lib/config");
-const { resolve } = require("path");
-const cli = require("nodemon/lib/cli");
-const uri = "mongodb://127.0.0.1:27017";
+const mongodb = require('mongodb');
+const { emit } = require('process');
+const { syncBuiltinESMExports } = require('module');
+const { system } = require('nodemon/lib/config');
+const { resolve } = require('path');
+const cli = require('nodemon/lib/cli');
+const uri = 'mongodb://127.0.0.1:27017';
 const client = new mongodb.MongoClient(uri);
 
-const databaseName = "commercialsDB";
-const collectionName = "Clients";
-const adminCollection = "Admin";
+const databaseName = 'commercialsDB';
+const collectionName = 'Clients';
+const adminCollection = 'Admin';
 
+/* ---------------Arrays declarations--------------- */
 let screensNamesArr = [];
 const connectedClientsArr = [];
-const disconnectedArr = ["screen-1", "screen-2", "screen-3"];
 let mongoData = [];
-// let screen1Arr=[];
-// let screen2Arr=[];
-// let screen3Arr=[];
+const disconnectedArr = ['screen-1', 'screen-2', 'screen-3'];
 
 /* ---------------mongodb connection--------------- */
 client.connect((err) => {
   if (err) {
-    console.log("***Connection with mongodb failed ");
+    console.log('***Connection with mongodb failed ');
     console.log(err);
-  } else console.log("***Connection with mongodb created");
+  } else console.log('***Connection with mongodb created');
 
   const db = client.db(databaseName);
 
   /* ------If the USERS DATA collection already exists------ */
-  db.collection("usersData").insertMany([{ id: 0 }], function () {
-    if (db.listCollections({ name: "usersData" }).hasNext()) {
-      db.dropCollection("usersData", function (err) {
+  db.collection('usersData').insertMany([{ id: 0 }], function () {
+    if (db.listCollections({ name: 'usersData' }).hasNext()) {
+      db.dropCollection('usersData', function (err) {
         if (err) console.log(err);
       });
 
-      db.createCollection("usersData", function (err, res) {
+      db.createCollection('usersData', function (err) {
         if (err) console.log(err);
       });
     }
@@ -71,13 +69,13 @@ client.connect((err) => {
     db.collection(adminCollection).insertMany(
       [
         {
-          role: "admin",
-          userName: "abc",
+          role: 'admin',
+          userName: 'abc',
           password: 1234,
         },
       ],
       (error) => {
-        if (error) return console.log("***Could not insert\n", error);
+        if (error) return console.log('***Could not insert\n', error);
       }
     );
   });
@@ -98,63 +96,64 @@ client.connect((err) => {
     db.collection(collectionName).insertMany(
       [
         {
-          screen: "screen-1",
+          screen: 'screen-1',
           commeracials: [
             {
               id: 1,
-              imgUrl: "https://cdn.osxdaily.com/wp-content/uploads/2019/08/test-the-impossible-mac-advertisment.jpg",
+              imgUrl:
+                'https://cdn.osxdaily.com/wp-content/uploads/2019/08/test-the-impossible-mac-advertisment.jpg',
               duration: 1000,
             },
             {
               id: 2,
               imgUrl:
-                "https://www.gizmochina.com/wp-content/uploads/2021/09/iPhone-13-Pro-featured.png",
+                'https://www.gizmochina.com/wp-content/uploads/2021/09/iPhone-13-Pro-featured.png',
               duration: 2000,
             },
           ],
         },
         {
-          screen: "screen-2",
+          screen: 'screen-2',
           commeracials: [
             {
               id: 1,
               imgUrl:
-                "https://m.media-amazon.com/images/M/MV5BMjkzMzM1YWEtYzI5YS00ZGMyLWE5NjAtYzhiYWZmNDY2ODJjXkEyXkFqcGdeQXVyMjA0OTk3OTg@._V1_.jpg",
+                'https://m.media-amazon.com/images/M/MV5BMjkzMzM1YWEtYzI5YS00ZGMyLWE5NjAtYzhiYWZmNDY2ODJjXkEyXkFqcGdeQXVyMjA0OTk3OTg@._V1_.jpg',
               duration: 4000,
             },
             {
               id: 2,
               imgUrl:
-                "https://www.incimages.com/uploaded_files/image/1920x1080/chickenbigmac_220981.png",
+                'https://www.incimages.com/uploaded_files/image/1920x1080/chickenbigmac_220981.png',
               duration: 2000,
             },
           ],
         },
         {
-          screen: "screen-3",
+          screen: 'screen-3',
           commeracials: [
             {
               id: 1,
-              imgUrl: "https://cached.imagescaler.hbpl.co.uk/resize/scaleWidth/815/cached.offlinehbpl.hbpl.co.uk/news/OMC/719F37E0-A7DC-4633-75ECEB408400BC61.jpg",
+              imgUrl:
+                'https://cached.imagescaler.hbpl.co.uk/resize/scaleWidth/815/cached.offlinehbpl.hbpl.co.uk/news/OMC/719F37E0-A7DC-4633-75ECEB408400BC61.jpg',
               duration: 1000,
             },
             {
               id: 2,
-              imgUrl:
-                "https://i.ytimg.com/vi/xlXw4hC2fmA/maxresdefault.jpg",
+              imgUrl: 'https://i.ytimg.com/vi/xlXw4hC2fmA/maxresdefault.jpg',
               duration: 3000,
             },
             {
               id: 3,
               imgUrl:
-                "https://www.natalieportman.com/wp-content/uploads/2013/08/missdiorleparfum.jpg",
+                'https://www.natalieportman.com/wp-content/uploads/2013/08/missdiorleparfum.jpg',
               duration: 5000,
             },
           ],
         },
       ],
       (error) => {
-        if (error) return console.log("***Could not insert\n", error);
+        if (error) return console.log('***Could not insert\n', error);
 
         /* ------------save screens names------------ */
         db.collection(collectionName)
@@ -175,8 +174,8 @@ server.listen(port);
 console.log(`***Server started running at http://localhost: ${port}`);
 
 /* ---------------'localhost:8080'--------------- */
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/homePage.html"));
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '/homePage.html'));
 });
 
 /* --------------'localhost:8080/screen-x'-------------- */
@@ -189,9 +188,8 @@ let flagEmit = false;
 let adminTime;
 let adminFlag = false;
 let flagAdminConn = false;
-// let isAdminConnected = false;
 
-app.get("/:uid", async function (request, response) {
+app.get('/:uid', async function (request, response) {
   let currId = request.params.uid;
   let currDatetime = new Date().toString().slice(0, 24);
 
@@ -213,20 +211,20 @@ app.get("/:uid", async function (request, response) {
       datetime = currDatetime;
       await callConnectToSocket(response, currId);
     }
-  } else if (currId === "admin" && adminTime == null) {
-    id = "admin";
+  } else if (currId === 'admin' && adminTime == null) {
+    id = 'admin';
     adminTime = currDatetime;
     await callConnectToAdminSocket(response, id);
-  } else if (currId === "admin" && adminTime != currDatetime) {
-    id = "admin";
+  } else if (currId === 'admin' && adminTime != currDatetime) {
+    id = 'admin';
     adminTime = currDatetime;
-    // isAdminConnected = true;
     await callConnectToAdminSocket(response, id);
   } else {
-    response.sendFile(path.join(__dirname, "/homePage.html"));
+    response.sendFile(path.join(__dirname, '/homePage.html'));
   }
 });
 
+/* --------------------------------------------------------- */
 function callConnectToSocket(response, id) {
   if (flag == false) {
     connectToSocket(response, id);
@@ -239,13 +237,13 @@ function callConnectToAdminSocket(response, id) {
   }
 }
 
-/* -------------------- user login -------------------- */
+/* -------------------- Clients connection -------------------- */
 let htmlName;
 function connectToSocket(response, screenName) {
   flag = true;
   flagConn = false;
 
-  io.sockets.on("connection", async function (socket) {
+  io.sockets.on('connection', async function (socket) {
     flagEmit = false;
     if (id === screenName) {
       await callConnection(socket, screenName);
@@ -259,35 +257,35 @@ function connectToSocket(response, screenName) {
       if (index !== -1) {
         disconnectedArr.splice(index, 1);
       }
-      io.sockets.emit("connectedUser", connectedClientsArr, disconnectedArr);
-      console.log(connectedClientsArr);
-    } else if (id === "admin") {
-      console.log(connectedClientsArr);
-      io.sockets.emit("connectedUser", connectedClientsArr, disconnectedArr);
+      io.sockets.emit('connectedUser', connectedClientsArr, disconnectedArr);
+    } else if (id === 'admin') {
+      io.sockets.emit('connectedUser', connectedClientsArr, disconnectedArr);
     }
   });
-  if (id === "admin") {
-    htmlName = "admin";
+  if (id === 'admin') {
+    htmlName = 'admin';
   } else {
-    htmlName = "screen";
+    htmlName = 'screen';
   }
   response.sendFile(path.join(__dirname, `/${htmlName}.html`));
   flag = false;
 }
 
+/* ---------------Admin connection--------------- */
 function connectToAdminSocket(response, screenName) {
   adminFlag = true;
   flagAdminConn = false;
 
-  io.sockets.on("connection", async function (socket) {
-    if (id === "admin") {
+  io.sockets.on('connection', async function (socket) {
+    if (id === 'admin') {
       await callAdminConnection(socket, screenName);
     }
   });
-  response.sendFile(path.join(__dirname, "/admin.html"));
+  response.sendFile(path.join(__dirname, '/admin.html'));
   adminFlag = false;
 }
 
+/* ---------------Update 'usersData' collection--------------- */
 function callConnection(socket, screenName) {
   let dbo;
   let randID;
@@ -296,7 +294,6 @@ function callConnection(socket, screenName) {
     flagConn = true;
 
     client.connect(function (err, db) {
-      console.log("hello client!!");
       dbo = db.db(databaseName);
       randID = Math.trunc(Math.random() * 1000000) + 1;
 
@@ -304,11 +301,11 @@ function callConnection(socket, screenName) {
         id: randID,
         user: screenName,
         LoginTime: datetime,
-        LogoutTime: "Still connected",
+        LogoutTime: 'Still connected',
       };
 
       if (id === obj.user) {
-        dbo.collection("usersData").insertOne(obj, function (err, res) {
+        dbo.collection('usersData').insertOne(obj, function (err, res) {
           if (err) console.log(err);
         });
       }
@@ -320,29 +317,30 @@ function callConnection(socket, screenName) {
           if (err) console.log(err);
 
           socket.name = screenName;
-          socket.emit("getJson", result, screenName);
+          socket.emit('getJson', result, screenName);
         });
     });
-    /* ----------------- disconnect -------------- */
+    /* ----------------- client disconnect -------------- */
     myDisconnect(socket, dbo, randID);
   }
 }
 
+/* ---------------Admin functionality--------------- */
 function callAdminConnection(socket, screenName) {
   if (flagAdminConn == false) {
     flagAdminConn = true;
     client.connect(function (err, db) {
-      console.log("inside admin connect");
       const dbo = db.db(databaseName);
 
       dbo
         .collection(adminCollection)
-        .find({ role: "admin" })
+        .find({ role: 'admin' })
         .toArray(function (err, result) {
           if (err) console.log(err);
 
+          /* ---------------Call 'admin.html'--------------- */
           socket.emit(
-            "getAdmin",
+            'getAdmin',
             result[0].userName,
             result[0].password,
             mongoData,
@@ -351,7 +349,7 @@ function callAdminConnection(socket, screenName) {
           );
         });
 
-      socket.on("notifyServerToRemoveClient", function (screenName) {
+      socket.on('notifyServerToRemoveClient', function (screenName) {
         mongoData = mongoData.filter((c) => c.screen !== screenName);
 
         dbo
@@ -361,24 +359,22 @@ function callAdminConnection(socket, screenName) {
           })
           .then((result) => {
             if (result.deletedCount === 1) {
-              console.log("Successfully deleted one document.");
+              console.log('Successfully deleted one document.');
             } else {
               console.log(
-                "No documents matched the query. Deleted 0 documents."
+                'No documents matched the query. Deleted 0 documents.'
               );
             }
           });
 
         for (let i = 0; i < screensNamesArr.length; i++) {
-          console.log("screen is - " + screenName);
           if (screensNamesArr[i] === screenName) {
             screensNamesArr.splice(i, 1);
           }
         }
       });
 
-      // TODO: change name
-      socket.on("notifyServerToEditComm", function (screenName, editedComm) {
+      socket.on('notifyServerToEditComm', function (screenName, editedComm) {
         const client = mongoData.find((c) => c.screen === screenName);
         client.commeracials.forEach((comm) => {
           if (comm.id === editedComm.id) {
@@ -392,11 +388,11 @@ function callAdminConnection(socket, screenName) {
           .updateMany(
             {
               screen: screenName,
-              "commeracials.id": editedComm.id,
+              'commeracials.id': editedComm.id,
             },
             {
               $set: {
-                "commeracials.$": {
+                'commeracials.$': {
                   id: editedComm.id,
                   imgUrl: editedComm.imgUrl,
                   duration: Number(editedComm.duration),
@@ -406,16 +402,16 @@ function callAdminConnection(socket, screenName) {
           )
           .then((result) => {
             if (result.matchedCount === 1) {
-              console.log("Successfully updated one document.");
+              console.log('Successfully updated one document.');
             } else {
               console.log(
-                "No documents matched the query. Updated 0 documents."
+                'No documents matched the query. Updated 0 documents.'
               );
             }
           });
       });
 
-      socket.on("notifyServerToRemoveComm", function (client, Commid) {
+      socket.on('notifyServerToRemoveComm', function (client, Commid) {
         mongoData = mongoData.filter((c) => c.screen !== client.screen);
         client.commeracials = client.commeracials.filter(
           (comm) => comm.id !== Commid
@@ -432,11 +428,8 @@ function callAdminConnection(socket, screenName) {
       });
 
       socket.on(
-        "notifyServerToAddCommercial",
+        'notifyServerToAddCommercial',
         function (screenName, commercial) {
-          console.log("screen : " + screenName);
-          console.log("commercial : " + commercial);
-
           const client = mongoData.find((c) => c.screen === screenName);
           client.commeracials.push(commercial);
 
@@ -450,196 +443,40 @@ function callAdminConnection(socket, screenName) {
           );
         }
       );
-      // socket.on("notifyServerToAddClient", function (newClient) {
-      //   dbo.collection(collectionName).insertOne({
-      //     screen: newClient.screen,
-      //     commeracials: [],
-      //   });
-      // });
+
       socket.on(
-        "notifyServerToChangeAdminPassword",
+        'notifyServerToChangeAdminPassword',
         function (adminName, adminPassword) {
           dbo
             .collection(adminCollection)
             .updateOne(
-              { role: "admin" },
+              { role: 'admin' },
               { $set: { userName: adminName, password: Number(adminPassword) } }
             );
         }
       );
     });
-    socket.on("disconnect", function () {
-      console.log("admin disconnected");
+
+    /* ---------------Admin disconnection--------------- */
+    socket.on('disconnect', function () {
+      console.log('admin disconnected');
     });
   }
 }
 
-/* -------------------- user logout -------------------- */
+/* -------------------- Clients disconnection -------------------- */
 function myDisconnect(socket, dbo, randID) {
-  socket.on("disconnect", function () {
+  socket.on('disconnect', function () {
     let index = connectedClientsArr.indexOf(socket.name);
     connectedClientsArr.splice(index, 1);
     index = connectedClientsArr.indexOf(socket.name);
-    console.log("index: " + index);
     if (index === -1) disconnectedArr.push(socket.name);
 
-    io.sockets.emit("disconnectUser", connectedClientsArr, disconnectedArr);
+    io.sockets.emit('disconnectUser', connectedClientsArr, disconnectedArr);
     var datetime = new Date().toString().slice(0, 24);
 
     dbo
-      .collection("usersData")
+      .collection('usersData')
       .updateOne({ id: randID }, { $set: { LogoutTime: datetime } });
   });
 }
-
-/* -------------------- admin login -------------------- */
-// function adminFunc(response) {
-//   io.sockets.on("connection", function (socket) {
-//     console.log("hello");
-//     client.connect(function (err, db) {
-//       const dbo = db.db(databaseName);
-
-//       dbo
-//         .collection(adminCollection)
-//         .find({ role: "admin" })
-//         .toArray(function (err, result) {
-//           if (err) console.log(err);
-
-//           socket.emit(
-//             "getAdmin",
-//             result[0].userName,
-//             result[0].password,
-//             mongoData
-//           );
-//         });
-
-//       socket.on("notifyServerToRemoveClient", function (screenName) {
-//         dbo
-//           .collection(collectionName)
-//           .deleteMany({
-//             screen: screenName,
-//           })
-//           .then((result) => {
-//             if (result.deletedCount === 1) {
-//               console.log("Successfully deleted one document.");
-//             } else {
-//               console.log(
-//                 "No documents matched the query. Deleted 0 documents."
-//               );
-//             }
-//           });
-
-//         for (let i = 0; i < screensNamesArr.length; i++) {
-//           console.log("screen is - " + screenName);
-//           if (screensNamesArr[i] === screenName) {
-//             screensNamesArr.splice(i, 1);
-//           }
-//         }
-//       });
-
-//       /*OLD*/
-//       // socket.on("notifyServerToEditClient", function (client) {
-//       //   dbo
-//       //     .collection(collectionName)
-//       //     .updateMany(
-//       //       { screen: client.screen },
-//       //       {
-//       //         $set: { commeracials: client.commeracials },
-//       //       }
-//       //     )
-//       //     .then((result) => {
-//       //       if (result.deletedCount === 1) {
-//       //         console.log("Successfully deleted one document.");
-//       //       } else {
-//       //         console.log(
-//       //           "No documents matched the query. Deleted 0 documents."
-//       //         );
-//       //       }
-//       //     });
-//       // });
-
-//       /*NEW*/
-//       socket.on("notifyServerToEditClient", function (screenName, editedComm) {
-//         console.log(editedComm.id);
-//         dbo
-//           .collection(collectionName)
-//           .updateMany(
-//             {
-//               screen: screenName,
-//               "commeracials.id": editedComm.id,
-//             },
-//             {
-//               $set: {
-//                 "commeracials.$": {
-//                   id: editedComm.id,
-//                   img: editedComm.img,
-//                   imgUrl: editedComm.imgUrl,
-//                   duration: Number(editedComm.duration),
-//                 },
-//               },
-//             }
-//           )
-//           .then((result) => {
-//             if (result.matchedCount === 1) {
-//               console.log("Successfully updated one document.");
-//             } else {
-//               console.log(
-//                 "No documents matched the query. Updated 0 documents."
-//               );
-//             }
-//           });
-//       });
-
-//       socket.on("notifyServerToRemoveComm", function (client, Commid) {
-//         Commid = Number(Commid);
-//         dbo
-//           .collection(collectionName)
-//           .updateMany(
-//             { screen: client.screen },
-//             { $pull: { commeracials: { id: Commid } } }
-//           );
-//       });
-
-//       socket.on(
-//         "notifyServerToAddCommercial",
-//         function (screenName, commercial) {
-//           console.log("screen : " + screenName);
-//           console.log("commercial : " + commercial);
-//           dbo.collection(collectionName).updateMany(
-//             { screen: screenName },
-//             {
-//               $push: {
-//                 commeracials: commercial,
-//               },
-//             }
-//           );
-//         }
-//       );
-//       socket.on("notifyServerToAddClient", function (newClient) {
-//         dbo.collection(collectionName).insertOne({
-//           screen: newClient.screen,
-//           commeracials: [],
-//         });
-//       });
-//       socket.on(
-//         "notifyServerToChangeAdminPassword",
-//         function (adminName, adminPassword) {
-//           dbo
-//             .collection(adminCollection)
-//             .updateOne(
-//               { role: "admin" },
-//               { $set: { userName: adminName, password: Number(adminPassword) } }
-//             );
-//         }
-//       );
-//     });
-//   });
-
-//   response.sendFile(path.join(__dirname, "/admin.html"));
-// }
-
-// function sendUserDataToAdmin(socket, screenName) {
-//   socket.on("userConnect", function () {
-//     io.sockets.emit("connectedUser", screenName);
-//   });
-// }

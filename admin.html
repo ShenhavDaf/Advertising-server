@@ -102,13 +102,13 @@
 <script type="text/javascript">
   var socket = io();
 
-  const inputLoginUsername = document.querySelector(".login_input--user");
-  const inputLoginPin = document.querySelector(".login_input--password");
-  const main = document.querySelector(".main");
-  const loginBtn = document.querySelector(".login_btn");
+  const inputLoginUsername = document.querySelector('.login_input--user');
+  const inputLoginPin = document.querySelector('.login_input--password');
+  const main = document.querySelector('.main');
+  const loginBtn = document.querySelector('.login_btn');
 
   socket.on(
-    "getAdmin",
+    'getAdmin',
     function (
       userServer,
       passwordServer,
@@ -116,34 +116,30 @@
       connectedArr,
       disconnectedArr
     ) {
-      loginBtn.addEventListener("click", function (event) {
+      loginBtn.addEventListener('click', function (event) {
         event.preventDefault();
-        console.log("usersServer " + userServer);
-        console.log("password " + passwordServer);
-        console.log(socket);
 
         const user = inputLoginUsername.value;
         const password = Number(inputLoginPin.value);
 
         if (user === userServer && password === passwordServer) {
-          socket.emit("getResult", "true");
+          socket.emit('getResult', 'true');
           clientsArr = clientsCollection;
-          console.log(clientsArr);
           displayClients();
           displayUserData(connectedArr, disconnectedArr);
           adminInit();
         } else {
-          alert("User name or password are incorrect");
+          alert('User name or password are incorrect');
         }
       });
     }
   );
 
-  socket.on("connectedUser", function (connectedArr, disconnectedArr) {
+  socket.on('connectedUser', function (connectedArr, disconnectedArr) {
     displayUserData(connectedArr, disconnectedArr);
   });
 
-  socket.on("disconnectUser", function (connectedArr, disconnectedArr) {
+  socket.on('disconnectUser', function (connectedArr, disconnectedArr) {
     displayUserData(connectedArr, disconnectedArr);
   });
 </script>
