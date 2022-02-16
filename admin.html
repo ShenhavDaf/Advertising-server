@@ -28,7 +28,7 @@
           class="login_input login_input--password"
         />
         <button class="login_btn">&#10148;</button>
-        <button class="btn btn_logout">Exit &#187;</button>
+        <!-- <button class="btn btn_logout">Exit &#187;</button> -->
       </form>
     </div>
 
@@ -121,6 +121,9 @@
     function (userServer, passwordServer, clientsCollection) {
       loginBtn.addEventListener("click", function (event) {
         event.preventDefault();
+        console.log("usersServer " + userServer);
+        console.log("password " + passwordServer);
+        console.log(socket);
 
         const user = inputLoginUsername.value;
         const password = Number(inputLoginPin.value);
@@ -131,6 +134,8 @@
           displayClients();
           main.style.visibility = "visible";
           adminInit();
+        } else {
+          alert("User name or password are incorrect");
         }
       });
     }
